@@ -19,6 +19,9 @@ public class Car {
     private long seqDep;
     private int paintColor;
     private ArrayList<RatioConstraint> ratioConstraint; //depend of car
+    private ArrayList<RatioConstraint> highRatioConstraint; //Idem
+    private ArrayList<RatioConstraint> lowRatioConstraint;  //Idem
+    
 //    private int[] constrained; 
     
     /**
@@ -34,6 +37,8 @@ public class Car {
         this.id = id;
         this.paintColor = paintColor;
         this.ratioConstraint = new ArrayList<>();
+        this.highRatioConstraint = new ArrayList<>();
+        this.lowRatioConstraint=  new ArrayList<>();
     }
     
     /**
@@ -51,6 +56,8 @@ public class Car {
     
     public void addRationConstraint(RatioConstraint rat){
         ratioConstraint.add(rat);
+        if (rat.isIsPrioritary()) highRatioConstraint.add(rat);
+        else lowRatioConstraint.add(rat);
     }
 
     public long getId() {
@@ -76,6 +83,20 @@ public class Car {
     public boolean isContrainedBy(RatioConstraint rat){
         return ratioConstraint.contains(rat);
     }
+
+    public ArrayList<RatioConstraint> getHighRatioConstraint() {
+        return highRatioConstraint;
+    }
+
+    public ArrayList<RatioConstraint> getLowRatioConstraint() {
+        return lowRatioConstraint;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+    
+    
 
     @Override
     public String toString() {

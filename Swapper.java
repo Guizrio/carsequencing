@@ -22,6 +22,8 @@ public class Swapper extends Algo{
     long iViolationsAfter;     //Used to keep in memory violations costs after swap() call (because objViolAtPosition isn't be refreshed automatically --> more efficient)
     long jViolationsAfter;
     
+    ArrayList<RatioConstraint> modifConstraints;   //The list of constraints for which we have count a violation in 
+    
     public Swapper(DataProblem dat) {
         super(dat);
         multOfPaintViolations = dat.getClassObjective().getMultForCompute()[2];
@@ -35,7 +37,7 @@ public class Swapper extends Algo{
     /**
      * Perform a swap between car i and car j and return Solution.
      * <p>
-     * @param sol THe solution where cars must be swapped
+     * @param sol The solution where cars must be swapped
      * @param i car to be exchanged with car j
      * @param j car to be exchanged with car i
      * @return the Solution os swap.
@@ -44,34 +46,57 @@ public class Swapper extends Algo{
         Time timeStart = new Time();
         ArrayList<Car> cars = new ArrayList<Car>(sol.getCars());
         dat.getClassObjective().getMultForCompute();
+        
+        ArrayList<RatioConstraint> highPrioConstI = cars.get(i).getHighRatioConstraint();
+        ArrayList<RatioConstraint> lowPrioConstI = cars.get(i).getLowRatioConstraint(); 
+        ArrayList<RatioConstraint> highPrioConstJ = cars.get(j).getHighRatioConstraint();
+        ArrayList<RatioConstraint> lowPrioConstJ = cars.get(j).getLowRatioConstraint(); 
+        
+        long nbTotalViol[] = new long[2]; //Order : highprio, lowprio, paint batches
+        //Count number of HighPriority constraints violations
+        nbTotalViol[0] = 0;
+        for (RatioConstraint ratConst : highPrioConst) {
+            int startPossibleViol = Math.max(i - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around i
+            //int endPossibleViol = Math.min(i + ratConst.getWindowSize()-1, dat.getNbCars()-1);    //Last position where we could found an objective violation in window around i
 
-        long iViolationsBefore = objViolAtPosition.get(i);
-        long jViolationsBefore = objViolAtPosition.get(j);
+            for (int j = startPossibleViol; j <= i; j++) { //Position of start point window
+                int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - j); //Because lasts windows are "incompletes" (not same length)
+                int nbCarShedulInWindow = 0;
+                for (int k = j; k < j+min; k++) {
+                    if (shedulCars.get(k).getRatioConstraint().contains(ratConst)){
+                        nbCarShedulInWindow++;
+                    }
+                    nbTotalViol[0]+=Math.max(0,nbCarShedulInWindow - ratConst.getMaxCarInWindow());
+                }
+            }
+        }
+//        long iViolationsBefore = objViolAtPosition.get(i);
+//        long jViolationsBefore = objViolAtPosition.get(j);
                 
         Car car1 = new Car(cars.get(i));
         
         cars.set(i, cars.get(j));
         cars.set(j, car1);
         
-        iViolationsAfter = objViolAtPos(i, cars);
-        jViolationsAfter = objViolAtPos(j, cars);
+//        iViolationsAfter = objViolAtPos(i, cars);
+//        jViolationsAfter = objViolAtPos(j, cars);
         
         //objViolAtPosition.set(i, iViolationsAfter);    //We don't set now because it's not necessary if result of swap does'nt give better solution...
         //objViolAtPosition.set(j, jViolationsAfter);       //NOte : if we plan to call more than one swap at a time without check and modify objViolAtPosition, it's more complicated,
                                                             //      and maybe in this case it's better to automatically set objViolAtPosition here (and eventually to deset it after...
         
-        //We have to compute the new paint violation number
-        long nbTotalViol=0;
+        //We have to compute the new paint violation number@TODO ta mère
+        nbTotalViol[2]=0;
         int color = cars.get(0).getPaintColor();
         int sameColor=0;
         for (int k = 0; k < dat.getNbCars(); k++) {
             if(color == cars.get(k).getPaintColor()){
                 if(sameColor == dat.getMaxSamePainting()+1){
                     sameColor=1;
-                    nbTotalViol++;
+                    nbTotalViol[2]++;
                 }
             }else{
-                nbTotalViol++;
+                nbTotalViol[2]++;
                 color=cars.get(k).getPaintColor();
                 sameColor=1;
             }
@@ -79,7 +104,7 @@ public class Swapper extends Algo{
         
         long objValue = sol.getObjSol() - iViolationsBefore - jViolationsBefore
                                         + iViolationsAfter + jViolationsAfter
-                                        + nbTotalViol * multOfPaintViolations;
+                                        + nbTotalViol[2] * multOfPaintViolations;
         
         Solution solBis = new Solution(cars, objValue, sol.getPartialObjSol()[0],
                 sol.getPartialObjSol()[1], sol.getPartialObjSol()[2], 
