@@ -147,8 +147,8 @@ public class Swapper extends Algo{
                     if (shedulCars.get(k).getRatioConstraint().contains(ratConst)){
                         nbCarShedulInWindow++;
                     }
-                    nbTotalViol[0]+=Math.max(0,nbCarShedulInWindow - ratConst.getMaxCarInWindow());
                 }
+                nbTotalViol[0]+=Math.max(0,nbCarShedulInWindow - ratConst.getMaxCarInWindow());
             }
         }
         
@@ -165,8 +165,8 @@ public class Swapper extends Algo{
                     if (shedulCars.get(k).getRatioConstraint().contains(ratConst)){
                         nbCarShedulInWindow++;
                     }
-                    nbTotalViol[1]+=Math.max(0,nbCarShedulInWindow - ratConst.getMaxCarInWindow());
                 }
+                nbTotalViol[1]+=Math.max(0,nbCarShedulInWindow - ratConst.getMaxCarInWindow());
             }
         }
         
