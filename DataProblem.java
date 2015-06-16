@@ -81,6 +81,7 @@ public class DataProblem {
     private int nbLowPrioConstraints;
     private boolean areEasySatisfyRatioConstraints;
     private ClassObjective classObjective;
+    private int costPaintUnitViol;
     private Date DateJ;
     private int nbCarsDayJ;
     private int nbCarsDayJMinus1;
@@ -184,7 +185,7 @@ public class DataProblem {
         }
         
         nbCars = cars.size();
-        
+        costPaintUnitViol = classObjective.getMultForCompute()[2];
     }
     
     private boolean loadObjectives(){
@@ -258,13 +259,15 @@ public class DataProblem {
                     windowSize = Integer.parseInt(temp[1]);
                     
                     isPrioritary = Integer.parseInt(seqLineline[1])==1;
-                    
-                    if(isPrioritary) nbHighPrioConstraints++;
-                    else nbLowPrioConstraints++;
-                    
                     name = seqLineline[2];
                     
-                    ratConst.add(new RatioConstraint(ratio, windowSize, maxCarInWindow, isPrioritary, name));
+                    if(isPrioritary){
+                        nbHighPrioConstraints++;
+                        ratConst.add(new RatioConstraint(ratio, windowSize, maxCarInWindow, isPrioritary, name, classObjective.getMultForCompute()[0]));
+                    }else{
+                        nbLowPrioConstraints++;
+                        ratConst.add(new RatioConstraint(ratio, windowSize, maxCarInWindow, isPrioritary, name, classObjective.getMultForCompute()[1]));
+                    }
                     
                 }else if(seqLineline.length > 1) throw new IllegalStateException("The file : " 
                         + file.getAbsolutePath() 

@@ -131,8 +131,8 @@ public class Swapper extends Algo{
         long nbTotalViol[] = new long[2]; //Order : highprio, lowprio, paint batches
         int[] multObjective = dat.getClassObjective().getMultForCompute();        
         
-        ArrayList<RatioConstraint> highPrioConst = dat.getHighConst();
-        ArrayList<RatioConstraint> lowPrioConst = dat.getLowConst();        
+        ArrayList<RatioConstraint> highPrioConst = dat.getHighConst();      // Better : use directly shedulCars.get(i).getHighRatioConstraint();
+        ArrayList<RatioConstraint> lowPrioConst = dat.getLowConst();        // Better : use directly shedulCars.get(i).getLowRatioConstraint();
         
         //Count number of HighPriority constraints violations
         nbTotalViol[0] = 0;
@@ -148,7 +148,7 @@ public class Swapper extends Algo{
                         nbCarShedulInWindow++;
                     }
                 }
-                nbTotalViol[0]+=Math.max(0,nbCarShedulInWindow - ratConst.getMaxCarInWindow());
+                nbTotalViol[0]+= nbCarShedulInWindow - ratConst.getMaxCarInWindow()>0 ? 1: 0;
             }
         }
         
@@ -166,7 +166,8 @@ public class Swapper extends Algo{
                         nbCarShedulInWindow++;
                     }
                 }
-                nbTotalViol[1]+=Math.max(0,nbCarShedulInWindow - ratConst.getMaxCarInWindow());
+                nbTotalViol[1]+= nbCarShedulInWindow - ratConst.getMaxCarInWindow()>0 ? 1: 0;
+                
             }
         }
         

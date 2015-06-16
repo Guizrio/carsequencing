@@ -18,13 +18,15 @@ public class RatioConstraint implements Comparable<RatioConstraint>{
     private int windowSize;
     private int maxCarInWindow;
     private String name;
+    private final int ObjectiveCoeff;
     
-    public RatioConstraint(String ratio, int windowSize, int maxCarInWindow, boolean isPrioritary, String name){
+    public RatioConstraint(String ratio, int windowSize, int maxCarInWindow, boolean isPrioritary, String name, int ObjectiveCoeff){
         this.ratio = ratio;
         this.maxCarInWindow = maxCarInWindow;
         this.windowSize = windowSize;
         this.name = name;
         this.isPrioritary = isPrioritary;
+        this.ObjectiveCoeff = ObjectiveCoeff;
     }
 
     public boolean isIsPrioritary() {
@@ -45,6 +47,10 @@ public class RatioConstraint implements Comparable<RatioConstraint>{
 
     public String getName() {
         return name;
+    }
+
+    public int getObjectiveCoeff() {
+        return ObjectiveCoeff;
     }
 
     @Override

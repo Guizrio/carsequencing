@@ -37,8 +37,8 @@ public class CarSequencing {
 //        Solution sol2 = algori.solve();
 //        System.out.println(sol2);
         
-        RatioConstraint i = new RatioConstraint("1/10", 10, 1, true, "premiere contrainte");
-        RatioConstraint j = new RatioConstraint("2/10", 10, 1, true, "deuxième contrainte");
+        RatioConstraint i = new RatioConstraint("1/10", 10, 1, true, "premiere contrainte",10);
+        RatioConstraint j = new RatioConstraint("2/10", 10, 1, true, "deuxième contrainte",10);
         
         ArrayList<Car> cars = new ArrayList<>();
         
