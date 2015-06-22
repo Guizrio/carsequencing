@@ -71,12 +71,11 @@ public abstract class Algo {
         int sameColor=0;
         for (int i = 0; i < dat.getNbCars(); i++) {
             if(color == shedulCars.get(i).getPaintColor()){
-                if(sameColor == dat.getMaxSamePainting()+1){
+                if(++sameColor == dat.getMaxSamePainting()+1){
                     sameColor=1;
                     nbTotalViol[2]++;
                 }
             }else{
-                nbTotalViol[2]++;
                 color=shedulCars.get(i).getPaintColor();
                 sameColor=1;
             }
@@ -86,10 +85,7 @@ public abstract class Algo {
                 + nbTotalViol[1] * multObjective[1]
                 + nbTotalViol[2] * multObjective[2];
         
-        Solution sol = new Solution(shedulCars, objValue,
-                nbTotalViol[0] * multObjective[0],
-                nbTotalViol[1] * multObjective[1],
-                nbTotalViol[2] * multObjective[2], 
+        Solution sol = new Solution(shedulCars, objValue, new ArrayList<Long>(),
                 new Time().timeLongElapsedSince(timeStart.getLastSavedTime()));
         
         return sol;
