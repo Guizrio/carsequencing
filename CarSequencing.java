@@ -25,7 +25,7 @@ public class CarSequencing {
                                                     + File.separator   
                                                     +"Instances"
                                                     + File.separator
-                                                    + "022_3_4_EP_RAF_ENP";
+                                                    + "064_38_2_EP_RAF_ENP_ch2";
         
         
         DataProblem dat = new DataProblem(folderPath);
@@ -33,9 +33,9 @@ public class CarSequencing {
         Solution sol = algo.solve();
         System.out.println(sol);
 //        
-        Algo algori = new Swapper(dat);
-        Solution sol2 = algori.solve();
-        System.out.println(sol2);
+//        Algo algori = new Swapper(dat);
+//        Solution sol2 = algori.solve();
+//        System.out.println(sol2);
       
 //        
 //        ArrayList<Long> tre = new ArrayList<Long>(new ArrayList<Long>());

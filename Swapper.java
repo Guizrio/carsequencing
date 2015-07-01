@@ -86,7 +86,6 @@ public class Swapper extends Algo{
         //Now we just recalculate for only I violations:
         for (RatioConstraint ratConst : constI) {
             int startPossibleViol = Math.max(i - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around i
-            //int endPossibleViol = Math.min(i + ratConst.getWindowSize()-1, dat.getNbCars()-1);    //Last position where we could found an objective violation in window around i
 
             for (int k = startPossibleViol; k <= i; k++) { //Position of start point window
                 int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - k); //Because lasts windows could be "incompletes" (not same length)
@@ -97,15 +96,18 @@ public class Swapper extends Algo{
                             objChangeI -= (long)ratConst.getObjectiveCoeff();
                             break; //Like the car I could just add only one violation per window...
                         }
+                        System.out.println("");
                     }
+                    System.out.println("");
                 }
+                System.out.println("");
             }
+            System.out.println("");
         }
         
          //We do exactly the same for car J :
         for (RatioConstraint ratConst : constJ) {
             int startPossibleViol = Math.max(j - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around j
-            //int endPossibleViol = Math.min(j + ratConst.getWindowSize()-1, dat.getNbCars()-1);    //Last position where we could found an objective violation in window around j
 
             for (int k = startPossibleViol; k <= j; k++) { //Position of start point window
                 int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - k); //Because lasts windows could be "incompletes" (not same length)
@@ -224,7 +226,7 @@ public class Swapper extends Algo{
      */
     private long objViolAtPos(int i, ArrayList<Car> shedulCars){
         long nbTotalViol[] = new long[2]; //Order : highprio, lowprio, paint batches
-        int[] multObjective = dat.getClassObjective().getMultForCompute();        
+        int[] multObjective = dat.getClassObjective().getMultForCompute();
         
         ArrayList<RatioConstraint> highPrioConst = dat.getHighConst();      // Better : use directly shedulCars.get(i).getHighRatioConstraint();
         ArrayList<RatioConstraint> lowPrioConst = dat.getLowConst();        // Better : use directly shedulCars.get(i).getLowRatioConstraint();
@@ -286,25 +288,30 @@ public class Swapper extends Algo{
         long nbIterations = 0; //number of iterations performed by algorithm
         
         //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= 30000000000l){
-            nbIterations++;
+        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= 30000000000000l){
             
-            int randi = (int)(Math.random()*dat.getNbCarsDayJ())+dat.getNbCarsDayJMinus1();
-            int randj = (int)(Math.random()*dat.getNbCarsDayJ())+dat.getNbCarsDayJMinus1();
+            for (int i = dat.getNbCarsDayJMinus1(); i < dat.getNbCars()-1; i++) {
+                System.out.println("");
+                for (int j = i+1; j < dat.getNbCars(); j++) {
+                    nbIterations++;
+                    Solution solToTest = swap(incumbent, i, j);
+            
+                    if(incumbent.getObjSol() > solToTest.getObjSol()){
+                        incumbent = solToTest;
+                        objViolAtPosition = solToTest.getObjViolAtPosition();
+                    }
+                }
+            }
+            
+//            int randi = (int)(Math.random()*dat.getNbCarsDayJ())+dat.getNbCarsDayJMinus1();
+//            int randj = (int)(Math.random()*dat.getNbCarsDayJ())+dat.getNbCarsDayJMinus1();
             
             //To be erased
-            if(randi>499) System.out.println("randi = " + randi);
-            if(randi<0) System.out.println("randi = " + randi);
-            if(randj>499) System.out.println("randj = " + randj);
-            if(randj<0) System.out.println("randj = " + randj);
-            
-            
-            Solution solToTest = swap(incumbent, randi, randj);
-            
-            if(incumbent.getObjSol() > solToTest.getObjSol()){
-                incumbent = solToTest;
-                objViolAtPosition = solToTest.getObjViolAtPosition();
-            }
+//            if(randi>499) System.out.println("randi = " + randi);
+//            if(randi<0) System.out.println("randi = " + randi);
+//            if(randj>499) System.out.println("randj = " + randj);
+//            if(randj<0) System.out.println("randj = " + randj);
+
             
         }
         System.out.println("Nombre d'itérations : " + nbIterations);

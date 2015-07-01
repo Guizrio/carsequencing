@@ -5,6 +5,8 @@
  */
 package carsequencing;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Guillaume
@@ -22,6 +24,11 @@ public class ClassObjective {
         
         for(String str : objectives){
             if(str.contains("easy_to_satisfy")) areEasyToSatisfyConstraints = true;
+        }
+        
+        System.out.println("objectives length = " + objectives.length);
+        for (int i = 0; i < objectives.length; i++) {
+            System.out.println(objectives[i]);
         }
         
         if (objectives.length==2){
@@ -57,7 +64,7 @@ public class ClassObjective {
                 if(!objectives[0].equalsIgnoreCase("paint_color_batches") 
                         || !objectives[1].equalsIgnoreCase("high_priority_level_"
                                 + "and_easy_to_satisfy_ratio_constraints")
-                        || !objectives[1].equalsIgnoreCase("low_priority_level_ratio_constraints"))
+                        || !objectives[2].equalsIgnoreCase("low_priority_level_ratio_constraints"))
                     throw new IllegalStateException("Cas inconnu : " + objectives.toString());
                 else kindObjective = 4;
             }
@@ -83,43 +90,60 @@ public class ClassObjective {
         return kindObjective;
     }
     
+    /**
+     * Warning : the result is given in order : High prio, low prio, paint batches...
+     * <p>
+     * Particularly : it's not necessarily the same order than for objectives[]...
+     * @return Objective multipliers.
+     */
     public int[] getMultForCompute(){
         int[] result = new int[3]; //result[0] --> High prioritylevel, result[1] --> low priority level, result[2] --> paint color batches
         switch(kindObjective){
             case 1:
                 result[0] = 10000; 
                 result[1] = 1; 
-                result[2] = 100; 
+                result[2] = 100;
+                break;
             case 2:
                 result[0] = 10000; 
                 result[1] = 100; 
                 result[2] = 1;
+                break;
             case 3:
                 result[0] = 10000; 
                 result[1] = 0; 
                 result[2] = 100;
+                break;
             case 4:
                 result[0] = 100; 
                 result[1] = 1; 
                 result[2] = 10000;
+                break;
             case 5:
                 result[0] = 100; 
                 result[1] = 0; 
                 result[2] = 10000;
+                break;
             case 6:
                 result[0] = 10000; 
                 result[1] = 1; 
                 result[2] = 100;
+                break;
             case 7:
                 result[0] = 10000; 
                 result[1] = 0; 
                 result[2] = 100;
+                break;
             case 8:
                 result[0] = 10000; 
                 result[1] = 100; 
                 result[2] = 1;
-                
-//            case else: //Partie à rajouter quand on aura internet... (doit renvoyer une erreur)
+                break;
+            default:
+                result[0] = Integer.MAX_VALUE; 
+                result[1] = Integer.MAX_VALUE; 
+                result[2] = Integer.MAX_VALUE;
+                throw new IllegalStateException("Unknow case");
         }
         
         return result;
