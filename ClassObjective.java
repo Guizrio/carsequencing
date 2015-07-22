@@ -100,43 +100,43 @@ public class ClassObjective {
         int[] result = new int[3]; //result[0] --> High prioritylevel, result[1] --> low priority level, result[2] --> paint color batches
         switch(kindObjective){
             case 1:
-                result[0] = 10000; 
+                result[0] = 1000000; 
                 result[1] = 1; 
-                result[2] = 100;
+                result[2] = 1000;
                 break;
             case 2:
-                result[0] = 10000; 
-                result[1] = 100; 
+                result[0] = 1000000; 
+                result[1] = 1000; 
                 result[2] = 1;
                 break;
             case 3:
-                result[0] = 10000; 
+                result[0] = 1000000; 
                 result[1] = 0; 
-                result[2] = 100;
+                result[2] = 1000;
                 break;
             case 4:
-                result[0] = 100; 
+                result[0] = 1000; 
                 result[1] = 1; 
-                result[2] = 10000;
+                result[2] = 1000000;
                 break;
             case 5:
-                result[0] = 100; 
+                result[0] = 1000; 
                 result[1] = 0; 
-                result[2] = 10000;
+                result[2] = 1000000;
                 break;
             case 6:
-                result[0] = 10000; 
+                result[0] = 1000000; 
                 result[1] = 1; 
-                result[2] = 100;
+                result[2] = 1000;
                 break;
             case 7:
-                result[0] = 10000; 
+                result[0] = 1000000; 
                 result[1] = 0; 
-                result[2] = 100;
+                result[2] = 1000;
                 break;
             case 8:
-                result[0] = 10000; 
-                result[1] = 100; 
+                result[0] = 1000000; 
+                result[1] = 1000; 
                 result[2] = 1;
                 break;
             default:

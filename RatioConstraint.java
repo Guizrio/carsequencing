@@ -6,6 +6,7 @@
 package carsequencing;
 
 import com.sun.scenario.effect.impl.prism.PrCropPeer;
+import java.util.Objects;
 
 /**
  *
@@ -110,6 +111,50 @@ public class RatioConstraint implements Comparable<RatioConstraint>{
             
         }        
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.isPrioritary ? 1 : 0);
+        hash = 29 * hash + Objects.hashCode(this.ratio);
+        hash = 29 * hash + this.windowSize;
+        hash = 29 * hash + this.maxCarInWindow;
+        hash = 29 * hash + Objects.hashCode(this.name);
+        hash = 29 * hash + this.ObjectiveCoeff;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RatioConstraint other = (RatioConstraint) obj;
+        if (this.isPrioritary != other.isPrioritary) {
+            return false;
+        }
+        if (!Objects.equals(this.ratio, other.ratio)) {
+            return false;
+        }
+        if (this.windowSize != other.windowSize) {
+            return false;
+        }
+        if (this.maxCarInWindow != other.maxCarInWindow) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (this.ObjectiveCoeff != other.ObjectiveCoeff) {
+            return false;
+        }
+        return true;
+    }
+    
+    
     
     @Override
     public String toString(){

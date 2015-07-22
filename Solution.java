@@ -7,6 +7,7 @@ package carsequencing;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  *
@@ -18,6 +19,9 @@ public class Solution implements Comparable<Solution>{
                                 //ArrayList<Long> instead (where every long is an id)
     
     private ArrayList<Long> objViolAtPosition;   //save alls objective violation for all positions
+    
+    private long paintViol;
+    private boolean bestfound;
     
     private long objSol;
     private long timeToSolve;   //Time to found this solution (not necessary
@@ -32,11 +36,13 @@ public class Solution implements Comparable<Solution>{
      * @param objViolAtPosition
      * @param timeToSolve The time to get this solution (not necessarily global time)
      */
-    public Solution(ArrayList<Car> cars, long objSol, ArrayList<Long> objViolAtPosition, long timeToSolve){
+    public Solution(ArrayList<Car> cars, long objSol, ArrayList<Long> objViolAtPosition, long paintViol, long timeToSolve){
         this.cars = new ArrayList<>(cars);
         this.objSol = objSol;
         this.objViolAtPosition = new ArrayList<Long>(objViolAtPosition);
         this.timeToSolve = timeToSolve;
+        this.paintViol = paintViol;
+        this.bestfound = false;
     }
 
     public ArrayList<Car> getCars() {
@@ -55,6 +61,56 @@ public class Solution implements Comparable<Solution>{
         return objViolAtPosition;
     }
 
+    public long getPaintViol() {
+        return paintViol;
+    }
+
+    public boolean isBestfound() {
+        return bestfound;
+    }
+
+    public void setBestfound(boolean bestfound) {
+        this.bestfound = bestfound;
+    }
+    
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + Objects.hashCode(this.cars);
+        hash = 59 * hash + Objects.hashCode(this.objViolAtPosition);
+        hash = 59 * hash + (int) (this.paintViol ^ (this.paintViol >>> 32));
+        hash = 59 * hash + (int) (this.objSol ^ (this.objSol >>> 32));
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Solution other = (Solution) obj;
+        if (!Objects.equals(this.cars, other.cars)) {
+            return false;
+        }
+        if (!Objects.equals(this.objViolAtPosition, other.objViolAtPosition)) {
+            return false;
+        }
+        if (this.paintViol != other.paintViol) {
+            return false;
+        }
+        if (this.objSol != other.objSol) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
+
     @Override
     public int compareTo(Solution o) {
         
@@ -66,6 +122,7 @@ public class Solution implements Comparable<Solution>{
     @Override
     public String toString(){
         return "Solution : \n" + "\tCost : " + objSol + "\n\tTime : " 
-                + new Time(timeToSolve).toString();// + "\n\tOrder : \n" + cars.toString().replaceAll(",", "\t,").replaceAll("\\[", "\t\\[");
+                + new Time(timeToSolve).toString()
+                + "\n\tBestFound : " + bestfound;// + "\n\tOrder : \n" + cars.toString().replaceAll(",", "\t,").replaceAll("\\[", "\t\\[");
     }
 }

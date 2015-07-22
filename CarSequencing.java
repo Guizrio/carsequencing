@@ -25,17 +25,21 @@ public class CarSequencing {
                                                     + File.separator   
                                                     +"Instances"
                                                     + File.separator
-                                                    + "064_38_2_EP_RAF_ENP_ch2";
+                                                    + "039_38_4_RAF_EP_ch1";
         
+        
+        long time = 30000000000L;  // 3 secondes
         
         DataProblem dat = new DataProblem(folderPath);
-        Algorithm algo = new Algorithm(dat);
-        Solution sol = algo.solve();
-        System.out.println(sol);
+//        Algorithm algo = new Algorithm(dat);
+//        Solution sol = algo.solve(time);
+//        System.out.println(sol);
 //        
-//        Algo algori = new Swapper(dat);
-//        Solution sol2 = algori.solve();
-//        System.out.println(sol2);
+        Algo algori = new Swapper(dat);
+        Solution sol2 = algori.solve(time);
+        System.out.println(sol2);
+        
+        System.out.println("sol2 Validate ? " + SolutionValidator.validate(sol2, dat));
       
 //        
 //        ArrayList<Long> tre = new ArrayList<Long>(new ArrayList<Long>());

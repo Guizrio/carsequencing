@@ -5,81 +5,35 @@
  */
 package carsequencing;
 
-import static java.lang.Thread.sleep;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
+ *Class used to verify the validity of a solution.
+ * <p>
+ * More exactly, it verify that the given sequenced cars of the solution correspond
+ * to the objective of this solution.
+ * <p>
  * @author Guillaume
  */
-public class Algorithm {
+public class SolutionValidator {
     
-    private final DataProblem dat;
+    /*Note : The Next two variables are not thread-safe. In mono-thread context, they represent
+               if a part of the last solution given to validate() method bellow was correct or not.
+             If no validate() call was done, they are enabled to false.*/
+    private static boolean goodObjValue = false;
+    private static boolean goodNbPaintViol = false;
     
-    public Algorithm(DataProblem dat){
-        this.dat = dat;
-    }
+    //Serves only for testing
+    private static long highPrioViol = Long.MIN_VALUE;
+    private static long lowPrioViol = Long.MIN_VALUE;
+    private static long paintViol = Long.MIN_VALUE;
     
-    /**
-     * Just a naive resolution by simply shuffle positions...
-     * @param timeToSolve the time to return a solution
-     * @return 
-     */
-    public Solution solve(long timeToSolve){
-        Time tim = new Time();
-        
-        ArrayList<Car> shedulCars = new ArrayList<>(dat.getHaveToBeSheduledcars());
-        ArrayList<Car> nonShedulCars = new ArrayList<>(dat.getHaveNotToBeSheduledcars());
-        ArrayList<Car> allCars = new ArrayList<>(dat.getCars());
-        
-        //Collections.shuffle(shedulCars);
-       
-        allCars = new ArrayList<>();
-        allCars.addAll(nonShedulCars);
-        allCars.addAll(shedulCars);
-        
-//        long objectiveValue = calcSolutionValue(shedulCars);
-        Solution sol = calcSolutionValue(allCars, tim);
-        
-        System.out.println("\n\n");
-        System.out.println("Total number of cars = " + allCars.size());
-        System.out.println("Number of cars which must be sheduled : " + dat.getNbCarsDayJ());
-        System.out.println("Initial Solution Value = " + sol.getObjSol());
-        System.out.println("");        
-        
-        long nbIterations = 0; //number of iterations performed by algorithm
-        
-        //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(tim.getLastSavedTime()) <= timeToSolve){
-            nbIterations++;
-            long Incumbent = sol.getObjSol();
-            Collections.swap(shedulCars, 150, 150);
-            
-            allCars = new ArrayList();
-            allCars.addAll(nonShedulCars);
-            allCars.addAll(shedulCars);
-            
-            Solution solToTest = calcSolutionValue(allCars, tim);
-            
-            if(Incumbent > solToTest.getObjSol()) sol = solToTest;
-        }
-        System.out.println("Nombre d'itérations : " + nbIterations);
-        return sol;
-    }
-    
-    /**
-     * Calcul of Solution' value without any supposition manier of problem resolution.
-     * (naive test).
-     * @param allCars Sheduled cars in day. (J and J-1)
-     * @return the solution cost (better is lower)
-     */
-    public Solution calcSolutionValue(ArrayList<Car> allCars, Time timeStart){
+    public static boolean validate(Solution solToTest, DataProblem dat){
         
         long nbTotalViol[] = new long[3]; //Order : highprio, lowprio, paint batches
-        int[] multObjective = dat.getClassObjective().getMultForCompute();        
+        int[] multObjective = dat.getClassObjective().getMultForCompute();
+        
+        ArrayList<Car> allCars = solToTest.getCars();
         
         ArrayList<RatioConstraint> highPrioConst = dat.getHighConst();
         ArrayList<RatioConstraint> lowPrioConst = dat.getLowConst();
@@ -133,14 +87,39 @@ public class Algorithm {
             }
         }
         
+        highPrioViol = nbTotalViol[0];
+        lowPrioViol = nbTotalViol[1];
+        paintViol = nbTotalViol[2];
+        
         long objValue = nbTotalViol[0] * multObjective[0]
                 + nbTotalViol[1] * multObjective[1]
                 + nbTotalViol[2] * multObjective[2];
         
-        Solution sol = new Solution(allCars, objValue, new ArrayList<Long>(),
-                nbTotalViol[2] * multObjective[2],
-                new Time().timeLongElapsedSince(timeStart.getLastSavedTime()));
         
-        return sol;
+        goodObjValue = objValue == solToTest.getObjSol();
+        goodNbPaintViol = nbTotalViol[2] * multObjective[2] == solToTest.getPaintViol();    
+        
+        return objValue == solToTest.getObjSol()
+                && nbTotalViol[2] * multObjective[2] == solToTest.getPaintViol();
+    }
+
+    public static boolean isGoodObjValue() {
+        return goodObjValue;
+    }
+
+    public static boolean isGoodNbPaintViol() {
+        return goodNbPaintViol;
+    }
+
+    public static long getHighPrioViol() {
+        return highPrioViol;
+    }
+
+    public static long getLowPrioViol() {
+        return lowPrioViol;
+    }
+
+    public static long getPaintViol() {
+        return paintViol;
     }
 }

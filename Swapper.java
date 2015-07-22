@@ -5,9 +5,11 @@
  */
 package carsequencing;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,8 +17,6 @@ import java.util.Collections;
  */
 public class Swapper extends Algo{
     
-    private ArrayList<Long> objViolAtPosition;   //save alls objective violation for all positions 
-                                               //    (in order to don't recalculate violations along entirely vector of cars.
     private long multOfPaintViolations;     //keep the number multiplier of paint violation (objective function)    
     
     
@@ -27,7 +27,7 @@ public class Swapper extends Algo{
         multOfPaintViolations = dat.getClassObjective().getMultForCompute()[2];
         objViolAtPosition = new ArrayList<>();
         for (int i = 0; i < dat.getNbCars(); i++) {
-            objViolAtPosition.add(objViolAtPos(i, dat.getCars()));
+            objViolAtPosition.add(objViolAtPos(i, dat.getCars()));  //Normally we want just for first starting windows, not first car... so WARNING !
         }
     }
     
@@ -60,22 +60,22 @@ public class Swapper extends Algo{
     public Solution swap(Solution sol, int i, int j){
         Time timeStart = new Time();
         ArrayList<Car> cars = new ArrayList<Car>(sol.getCars());
-        dat.getClassObjective().getMultForCompute();        
         
         ArrayList<RatioConstraint> constBaseI = cars.get(i).getRatioConstraint();
         ArrayList<RatioConstraint> constBaseJ = cars.get(j).getRatioConstraint();
         
-        //Sort in 3 groups :
+        //Sort in 2 groups
         ArrayList<RatioConstraint> constI =  new ArrayList<>();
         ArrayList<RatioConstraint> constJ =  new ArrayList<>();
         
         for (RatioConstraint constraint : dat.getRatConst()) {
-            if(constBaseJ.contains(constraint)){
+            if(constBaseJ.contains(constraint) && !constBaseI.contains(constraint)){
                 constJ.add(constraint);
             }else if(constBaseI.contains(constraint) && !constBaseJ.contains(constraint)){
                 constI.add(constraint);
             }
         }
+
         
         //We create temp variable to store potential objective diffence at each pos
         long potentialObjDiff[] = new long[objViolAtPosition.size()];               //Not a number of violations but a cost/gain per position...
@@ -88,21 +88,17 @@ public class Swapper extends Algo{
             int startPossibleViol = Math.max(i - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around i
 
             for (int k = startPossibleViol; k <= i; k++) { //Position of start point window
-                int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - k); //Because lasts windows could be "incompletes" (not same length)
+                int min = Math.min(k + ratConst.getWindowSize(), dat.getNbCars()); //Because lasts windows could be "incompletes" (not same length)
                 int nbCarShedulInWindow = 0;
-                for (int l = k; l < k+min; l++) {
+                for (int l = k; l < min; l++) {
                     if (cars.get(l).getRatioConstraint().contains(ratConst)){
-                        if(nbCarShedulInWindow++ > ratConst.getMaxCarInWindow()){
+                        if(++nbCarShedulInWindow > ratConst.getMaxCarInWindow()){
                             objChangeI -= (long)ratConst.getObjectiveCoeff();
                             break; //Like the car I could just add only one violation per window...
                         }
-                        System.out.println("");
                     }
-                    System.out.println("");
                 }
-                System.out.println("");
             }
-            System.out.println("");
         }
         
          //We do exactly the same for car J :
@@ -110,11 +106,11 @@ public class Swapper extends Algo{
             int startPossibleViol = Math.max(j - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around j
 
             for (int k = startPossibleViol; k <= j; k++) { //Position of start point window
-                int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - k); //Because lasts windows could be "incompletes" (not same length)
+                int min = Math.min(k + ratConst.getWindowSize(), dat.getNbCars()); //Because lasts windows could be "incompletes" (not same length)
                 int nbCarShedulInWindow = 0;
-                for (int l = k; l < k+min; l++) {
+                for (int l = k; l < min; l++) {
                     if (cars.get(l).getRatioConstraint().contains(ratConst)){
-                        if(nbCarShedulInWindow++ > ratConst.getMaxCarInWindow()){
+                        if(++nbCarShedulInWindow > ratConst.getMaxCarInWindow()){
                             objChangeJ -= (long)ratConst.getObjectiveCoeff();
                             break; //Like the car I could just add only one violation per window...
                         }
@@ -144,14 +140,13 @@ public class Swapper extends Algo{
         //Now we just recalculate for new J violations on windows new J:
         for (RatioConstraint ratConst : constJ) {
             int startPossibleViol = Math.max(i - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around i
-            //int endPossibleViol = Math.min(i + ratConst.getWindowSize()-1, dat.getNbCars()-1);    //Last position where we could found an objective violation in window around i
 
             for (int k = startPossibleViol; k <= i; k++) { //Position of start point window
-                int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - k); //Because lasts windows could be "incompletes" (not same length)
+                int min = Math.min(k + ratConst.getWindowSize(), dat.getNbCars()); //Because lasts windows could be "incompletes" (not same length)
                 int nbCarShedulInWindow = 0;
-                for (int l = k; l < k+min; l++) {
+                for (int l = k; l < min; l++) {
                     if (cars.get(l).getRatioConstraint().contains(ratConst)){
-                        if(nbCarShedulInWindow++ > ratConst.getMaxCarInWindow()){
+                        if(++nbCarShedulInWindow > ratConst.getMaxCarInWindow()){
                             objChangeI += (long)ratConst.getObjectiveCoeff();
                             break; //Like the car I could just add only one violation per window...
                         }
@@ -163,14 +158,13 @@ public class Swapper extends Algo{
          //We do exactly the same for car J :
         for (RatioConstraint ratConst : constI) {
             int startPossibleViol = Math.max(j - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around j
-            //int endPossibleViol = Math.min(j + ratConst.getWindowSize()-1, dat.getNbCars()-1);    //Last position where we could found an objective violation in window around j
 
             for (int k = startPossibleViol; k <= j; k++) { //Position of start point window
-                int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - k); //Because lasts windows could be "incompletes" (not same length)
+                int min = Math.min(k + ratConst.getWindowSize(), dat.getNbCars()); //Because lasts windows could be "incompletes" (not same length)
                 int nbCarShedulInWindow = 0;
-                for (int l = k; l < k+min; l++) {
+                for (int l = k; l < min; l++) {
                     if (cars.get(l).getRatioConstraint().contains(ratConst)){
-                        if(nbCarShedulInWindow++ > ratConst.getMaxCarInWindow()){
+                        if(++nbCarShedulInWindow > ratConst.getMaxCarInWindow()){
                             objChangeJ += (long)ratConst.getObjectiveCoeff();
                             break; //Like the car I could just add only one violation per window...
                         }
@@ -179,11 +173,11 @@ public class Swapper extends Algo{
             }
         }
         
-        //And Calculate the paint violations :
-        long nbPaintViol=0;
-        int color = cars.get(0).getPaintColor();
+        //And Calculate the new paint violations :
+        long nbPaintViol=1;
+        int color = cars.get(dat.getNbCarsDayJMinus1()).getPaintColor();
         int sameColor=0;
-        for (int k = 0; k < dat.getNbCars(); k++) {
+        for (int k = dat.getNbCarsDayJMinus1(); k < dat.getNbCars(); k++) {
             if(color == cars.get(k).getPaintColor()){
                 if(++sameColor == dat.getMaxSamePainting()+1){
                     sameColor=1;
@@ -191,20 +185,23 @@ public class Swapper extends Algo{
                 }
             }else{
                 color=cars.get(k).getPaintColor();
+                nbPaintViol++;
                 sameColor=1;
             }
         }
         
-        long objValue = sol.getObjSol() +objChangeI + objChangeJ
+        long objValue = sol.getObjSol() + objChangeI + objChangeJ
+                                        - sol.getPaintViol()
                                         + nbPaintViol * multOfPaintViolations;
         
         //Now we could store new objViolAtPosition for i and j positions
-        ArrayList<Long> newObjViolAtPos = new ArrayList<Long>(objViolAtPosition);
+        ArrayList<Long> newObjViolAtPos = new ArrayList<>(objViolAtPosition);
         newObjViolAtPos.set(i, newObjViolAtPos.get(i) + objChangeI);
         newObjViolAtPos.set(j, newObjViolAtPos.get(j) + objChangeJ);
         
         
-        Solution solBis = new Solution(cars, objValue, newObjViolAtPos, 
+        Solution solBis = new Solution(cars, objValue, newObjViolAtPos,
+                nbPaintViol * multOfPaintViolations,
                 new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) 
                         + sol.getTimeToSolve());
         
@@ -224,7 +221,7 @@ public class Swapper extends Algo{
      * @param i the index of the sequenced car in list where we want the objective violation.
      * @return Objective violation at position i
      */
-    private long objViolAtPos(int i, ArrayList<Car> shedulCars){
+    private long objViolAtPos(int i, ArrayList<Car> allCars){
         long nbTotalViol[] = new long[2]; //Order : highprio, lowprio, paint batches
         int[] multObjective = dat.getClassObjective().getMultForCompute();
         
@@ -238,10 +235,10 @@ public class Swapper extends Algo{
             int startPossibleViol = Math.max(i - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around i
             
             for (int j = startPossibleViol; j <= i; j++) { //Position of start point window
-                int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - j); //Because lasts windows are "incompletes" (not same length)
+                int min = Math.min(j + ratConst.getWindowSize(), dat.getNbCars()); //Because lasts windows are "incompletes" (not same length)
                 int nbCarShedulInWindow = 0;
-                for (int k = j; k < j+min; k++) {
-                    if (shedulCars.get(k).getRatioConstraint().contains(ratConst)){
+                for (int k = j; k < min; k++) {
+                    if (allCars.get(k).getRatioConstraint().contains(ratConst)){
                         nbCarShedulInWindow++;
                     }
                 }
@@ -256,10 +253,10 @@ public class Swapper extends Algo{
             int startPossibleViol = Math.max(i - ratConst.getWindowSize() + 1, 0);    //First position where we could found an objective violation in window around i
             
             for (int j = startPossibleViol; j <= i; j++) { //Position of start point window
-                int min = Math.min(ratConst.getWindowSize(), dat.getNbCars() - j); //Because lasts windows are "incompletes" (not same length)
+                int min = Math.min( j + ratConst.getWindowSize(), dat.getNbCars()); //Because lasts windows are "incompletes" (not same length)
                 int nbCarShedulInWindow = 0;
-                for (int k = j; k < j+min; k++) {
-                    if (shedulCars.get(k).getRatioConstraint().contains(ratConst)){
+                for (int k = j; k < min; k++) {
+                    if (allCars.get(k).getRatioConstraint().contains(ratConst)){
                         nbCarShedulInWindow++;
                     }
                 }
@@ -272,15 +269,21 @@ public class Swapper extends Algo{
                 + nbTotalViol[1] * multObjective[1];
     }
 
+    /**
+     *Compute a Solution by swapping cars.
+     * <p>
+     * @param timeToSolve the time to return a solution.
+     * @return Solution.
+     */
     @Override
-    public Solution solve() {
+    public Solution solve(long timeToSolve) {
         Time timeStart = new Time();
         
-        ArrayList<Car> shedulCars = new ArrayList<>(dat.getCars());
-        Solution incumbent = InitialyzeSolutionValue(shedulCars, timeStart);
+        ArrayList<Car> allCars = new ArrayList<>(dat.getCars());
+        Solution incumbent = InitialyzeSolutionValue(allCars, timeStart);
         
         System.out.println("\n\n");
-        System.out.println("Total number of cars = " + shedulCars.size());
+        System.out.println("Total number of cars = " + allCars.size());
         System.out.println("Number of cars which must be sheduled : " + dat.getNbCarsDayJ());
         System.out.println("Initial Solution Value = " + incumbent.getObjSol());
         System.out.println("");
@@ -288,10 +291,9 @@ public class Swapper extends Algo{
         long nbIterations = 0; //number of iterations performed by algorithm
         
         //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= 30000000000000l){
-            
+        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= timeToSolve){
+            boolean bestfound=true;
             for (int i = dat.getNbCarsDayJMinus1(); i < dat.getNbCars()-1; i++) {
-                System.out.println("");
                 for (int j = i+1; j < dat.getNbCars(); j++) {
                     nbIterations++;
                     Solution solToTest = swap(incumbent, i, j);
@@ -299,22 +301,39 @@ public class Swapper extends Algo{
                     if(incumbent.getObjSol() > solToTest.getObjSol()){
                         incumbent = solToTest;
                         objViolAtPosition = solToTest.getObjViolAtPosition();
+                        bestfound = false;
                     }
                 }
             }
-            
-//            int randi = (int)(Math.random()*dat.getNbCarsDayJ())+dat.getNbCarsDayJMinus1();
-//            int randj = (int)(Math.random()*dat.getNbCarsDayJ())+dat.getNbCarsDayJMinus1();
-            
-            //To be erased
-//            if(randi>499) System.out.println("randi = " + randi);
-//            if(randi<0) System.out.println("randi = " + randi);
-//            if(randj>499) System.out.println("randj = " + randj);
-//            if(randj<0) System.out.println("randj = " + randj);
-
-            
+            if(bestfound){
+                incumbent.setBestfound(bestfound);
+                break;
+            }
         }
         System.out.println("Nombre d'itérations : " + nbIterations);
         return incumbent;
+    }
+
+    public ArrayList<Long> getObjViolAtPosition() {
+        return objViolAtPosition;
+    }
+    
+    
+    
+    
+    public static void main(String[] args) {
+        String folderPath = new File("").getAbsolutePath()  + File.separator 
+                                                    + "Instances_set_A"
+                                                    + File.separator   
+                                                    +"Instances"
+                                                    + File.separator
+                                                    + "064_38_2_EP_RAF_ENP_ch2";
+        
+        
+        DataProblem dat = new DataProblem(folderPath);
+        
+        Swapper algori = new Swapper(dat);        
+        Solution sol2 = algori.solve(30000000L);
+        System.out.println(sol2);
     }
 }
