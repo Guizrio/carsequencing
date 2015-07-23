@@ -17,10 +17,10 @@ import java.util.ArrayList;
  */
 public class Swapper extends Algo{
     
-    private long multOfPaintViolations;     //keep the number multiplier of paint violation (objective function)    
+    protected long multOfPaintViolations;     //keep the number multiplier of paint violation (objective function)    
     
     
-    ArrayList<RatioConstraint> modifConstraints;   //The list of constraints for which we have count a violation in 
+    protected ArrayList<RatioConstraint> modifConstraints;   //The list of constraints for which we have count a violation in 
     
     public Swapper(DataProblem dat) {
         super(dat);
@@ -58,7 +58,6 @@ public class Swapper extends Algo{
      * @return the Solution os swap.
      */
     public Solution swap(Solution sol, int i, int j){
-        Time timeStart = new Time();
         ArrayList<Car> cars = new ArrayList<Car>(sol.getCars());
         
         ArrayList<RatioConstraint> constBaseI = cars.get(i).getRatioConstraint();
@@ -202,8 +201,7 @@ public class Swapper extends Algo{
         
         Solution solBis = new Solution(cars, objValue, newObjViolAtPos,
                 nbPaintViol * multOfPaintViolations,
-                new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) 
-                        + sol.getTimeToSolve());
+                0L);
         
         
         
@@ -300,6 +298,7 @@ public class Swapper extends Algo{
             
                     if(incumbent.getObjSol() > solToTest.getObjSol()){
                         incumbent = solToTest;
+                        incumbent.setTimeToSolve(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()));
                         objViolAtPosition = solToTest.getObjViolAtPosition();
                         bestfound = false;
                     }

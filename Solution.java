@@ -44,6 +44,15 @@ public class Solution implements Comparable<Solution>{
         this.paintViol = paintViol;
         this.bestfound = false;
     }
+    
+    public Solution(Solution toCopy){
+        this.cars = new ArrayList<>(toCopy.getCars());
+        this.objSol = toCopy.getObjSol();
+        this.objViolAtPosition = new ArrayList<Long>(toCopy.getObjViolAtPosition());
+        this.timeToSolve = toCopy.getTimeToSolve();
+        this.paintViol = toCopy.getPaintViol();
+        this.bestfound = toCopy.isBestfound();
+    }
 
     public ArrayList<Car> getCars() {
         return cars;
@@ -72,6 +81,12 @@ public class Solution implements Comparable<Solution>{
     public void setBestfound(boolean bestfound) {
         this.bestfound = bestfound;
     }
+
+    public void setTimeToSolve(long timeToSolve) {
+        this.timeToSolve = timeToSolve;
+    }
+    
+    
     
 
     @Override

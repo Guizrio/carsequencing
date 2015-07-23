@@ -35,7 +35,7 @@ public class CarSequencing {
 //        Solution sol = algo.solve(time);
 //        System.out.println(sol);
 //        
-        Algo algori = new Swapper(dat);
+        Algo algori = new BetterSwap(dat);
         Solution sol2 = algori.solve(time);
         System.out.println(sol2);
         

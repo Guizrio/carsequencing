@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public abstract class Algo {
     
     protected final DataProblem dat;
-    protected ArrayList<Long> objViolAtPosition;   //save alls objective violation for all positions 
+    protected  ArrayList<Long> objViolAtPosition;   //save alls objective violation for all positions 
                                                //    (in order to don't recalculate violations along entirely vector of cars.
     
     public Algo(DataProblem dat){
@@ -33,7 +33,7 @@ public abstract class Algo {
     public Solution InitialyzeSolutionValue(ArrayList<Car> allCars, Time timeStart){
         
         long nbTotalViol[] = new long[3]; //Order : highprio, lowprio, paint batches
-        int[] multObjective = dat.getClassObjective().getMultForCompute();        
+        int[] multObjective = dat.getClassObjective().getMultForCompute();
         
         ArrayList<RatioConstraint> highPrioConst = dat.getHighConst();
         ArrayList<RatioConstraint> lowPrioConst = dat.getLowConst();
