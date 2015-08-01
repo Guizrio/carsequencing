@@ -25,10 +25,9 @@ public class Algorithm {
     
     /**
      * Just a naive resolution by simply shuffle positions...
-     * @param timeToSolve the time to return a solution
      * @return 
      */
-    public Solution solve(long timeToSolve){
+    public Solution solve(){
         Time tim = new Time();
         
         ArrayList<Car> shedulCars = new ArrayList<>(dat.getHaveToBeSheduledcars());
@@ -53,7 +52,7 @@ public class Algorithm {
         long nbIterations = 0; //number of iterations performed by algorithm
         
         //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(tim.getLastSavedTime()) <= timeToSolve){
+        while(new Time().timeLongElapsedSince(tim.getLastSavedTime()) <= CarSequencing.maxTimeToSolve){
             nbIterations++;
             long Incumbent = sol.getObjSol();
             Collections.swap(shedulCars, 150, 150);

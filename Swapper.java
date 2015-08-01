@@ -276,11 +276,10 @@ public class Swapper extends Algo{
     /**
      *Compute a Solution by swapping cars.
      * <p>
-     * @param timeToSolve the time to return a solution.
      * @return Solution.
      */
     @Override
-    public Solution solve(long timeToSolve) {
+    public Solution solve() {
         Time timeStart = new Time();
         
         ArrayList<Car> allCars = new ArrayList<>(dat.getCars());
@@ -295,7 +294,7 @@ public class Swapper extends Algo{
         long nbIterations = 0; //number of iterations performed by algorithm
         
         //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= timeToSolve){
+        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= CarSequencing.maxTimeToSolve){
             boolean bestfound=true;
             for (int i = dat.getNbCarsDayJMinus1(); i < dat.getNbCars()-1; i++) {
                 for (int j = i+1; j < dat.getNbCars(); j++) {
@@ -338,7 +337,7 @@ public class Swapper extends Algo{
         DataProblem dat = new DataProblem(folderPath);
         
         Swapper algori = new Swapper(dat);        
-        Solution sol2 = algori.solve(30000000L);
+        Solution sol2 = algori.solve();
         System.out.println(sol2);
     }
 }

@@ -19,7 +19,7 @@ public class BetterSwap extends Swapper{
     
     
     @Override
-    public Solution solve(long timeToSolve){
+    public Solution solve(){
         
         Time timeStart = new Time();
         
@@ -36,7 +36,7 @@ public class BetterSwap extends Swapper{
         long nbIterations = 0; //number of iterations performed by algorithm
         
         //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= timeToSolve){
+        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= CarSequencing.maxTimeToSolve){
             boolean bestfound=true;
             System.out.println(new Time().timeElapsedSince(timeStart.getLastSavedTime()));
             for (int i = dat.getNbCarsDayJMinus1(); i < dat.getNbCars()-1; i++) {

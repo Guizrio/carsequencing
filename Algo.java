@@ -22,7 +22,7 @@ public abstract class Algo {
         this.objViolAtPosition = new ArrayList<>();
     }
     
-    public abstract Solution solve(long time);
+    public abstract Solution solve();
     
     /**
      * Calcul of Solution' value without any supposition manier of problem resolution.
