@@ -18,8 +18,9 @@ public class GeneticAlgo {
    private int maxUselessIterations = 60;
    private double propPopMothers = 0.25;
    private double propPopFathers = 0.5;
-   private double propPopChildrenCouldMuting = 0.01;
-   private double nbGenInChromozomCouldMute = 100; 
+   private double propPopChildrenCouldMuting = 0.05;
+   private double propGenInChromozomCouldMute = 0.1;    //Represent the maximal proportion of mutation in a children' gene which has to mute 
+   private int nbGenInChromozomCouldMute;  //bind with propGenInChromozomCouldMute multiply by number of car must be scheduled
    private boolean continuity = false;
    
    private double nbCarsToSchedule;
@@ -28,6 +29,7 @@ public class GeneticAlgo {
    
    public GeneticAlgo(DataProblem dat){
        this.dat = dat;
+       nbGenInChromozomCouldMute = (int)(propGenInChromozomCouldMute * dat.getNbCarsDayJ());
    }
    
    public GeneticAlgo(    int nbSolutions, 
@@ -37,6 +39,7 @@ public class GeneticAlgo {
                             double propPopFathers,
                             double propPopCouldMuting,
                             boolean continuity,
+                            double propGenInChromozomCouldMute,
                             DataProblem dat){
        
        if(  nbSolutions < 0 ||
@@ -66,6 +69,8 @@ public class GeneticAlgo {
        this.propPopChildrenCouldMuting = propPopCouldMuting;
        this.dat = dat;
        this.nbCarsToSchedule = dat.getNbCarsDayJ();
+       this.propGenInChromozomCouldMute = propGenInChromozomCouldMute;
+       this.nbGenInChromozomCouldMute = (int)(propGenInChromozomCouldMute * dat.getNbCarsDayJ());
        this.continuity = continuity;    //parameter for cross-over kind (continuity=true => all genes of mother and father are taken in the order they appear)
    }
     
@@ -79,12 +84,13 @@ public class GeneticAlgo {
         
         solutions.add(new Solution(dat.getCars(), dat));
         Swapper swapBibi = new Swapper(dat);
-        //solutions.add(swapBibi.solve(CarSequencing.maxTimeToSolve));
+        solutions.add(swapBibi.solve());
         
         System.out.println("Base solution from swapper added");
         
         for (int i = 0 ; i < nbSolutions-2 ; i++) {
             Solution newSol = new Solution(dat);
+            newSol.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
             solutions.add(newSol);
         }
         
@@ -106,7 +112,10 @@ public class GeneticAlgo {
                 iterations++;
             }
             
-            solBest = solutions.get(0); 
+            if(solutions.get(0).getObjSol() < solBest.getObjSol()){
+                solBest = solutions.get(0);
+                solBest.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
+            }
             
             for (int i = 0 ; i < solutions.size() * propPopMothers ; i++) {
                 int rdm = (int)( Math.random()*(solutions.size() * propPopFathers) );
@@ -250,7 +259,7 @@ public class GeneticAlgo {
         params.add("population : " + nbSolutions);
         params.add("proportion de mères dans la population : " + propPopMothers);
         params.add("proportion de pères dans la population : " + propPopFathers);
-        params.add("max number of gene could mute : " + nbGenInChromozomCouldMute);
+        params.add("proportion of gene could mute : " + propGenInChromozomCouldMute);
         params.add("proportion/catégorie d'individus pouvant muter : " + propPopChildrenCouldMuting);
         params.add("nombre maximum d'itérations inchangeantes avant d'arêter l'algo : " + maxUselessIterations);
         
@@ -264,7 +273,7 @@ public class GeneticAlgo {
                                 +  "  Pmoth_" + propPopMothers 
                                 + "  Pfat_" + propPopFathers 
                                 +  "  Pmut_" + propPopChildrenCouldMuting
-                                + "  PGenMut_" + nbGenInChromozomCouldMute;
+                                + "  PGenMut_" + propGenInChromozomCouldMute;
         return stringParams;
     }
 }
