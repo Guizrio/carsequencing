@@ -59,11 +59,21 @@ public class BetterSwap extends Swapper{
             }
             
             if(bestfound){
-                //Portion of car which will be swapped to break local convergence
+                System.out.println("Local swap convergence reached, best cost : "
+                        + localIncumbent.getObjSol());
+                System.out.println("Local solution validate ? " + SolutionValidator.validate(localIncumbent, dat));
+                 System.out.println("Begin initialization of another seed");
+                //Portion of car which will could be swapped to break local convergence
                int  nbToChange = (int) (dat.getNbCarsDayJ()/10);
+               
+               Time tt = new Time();
                 for (int i = 0; i < nbToChange; i++) {
+                    int aleaPos1 = (int)(Math.random()*dat.getNbCarsDayJ())+dat.getNbCarsDayJMinus1();
+                    int aleaPos2 = (int)(Math.random()*dat.getNbCarsDayJ())+dat.getNbCarsDayJMinus1();
                     
+                    localIncumbent = swap(localIncumbent, aleaPos1, aleaPos2);
                 }
+                System.out.println("Time passed to initialyze new seed : " + new Time().timeElapsedSince(tt.getLastSavedTime()));
             }
             
 //            if(bestfound && new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= timeToSolve){

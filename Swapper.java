@@ -31,6 +31,12 @@ public class Swapper extends Algo{
         }
     }
     
+    public Swapper(Solution sol, DataProblem dat){
+        super(dat);
+        multOfPaintViolations = dat.getClassObjective().getMultForCompute()[2];
+        objViolAtPosition = new ArrayList<>(sol.getObjViolAtPosition());
+    }
+    
     
     /**
      * Perform a swap between car i and car j and return Solution.
@@ -219,7 +225,7 @@ public class Swapper extends Algo{
      * @param i the index of the sequenced car in list where we want the objective violation.
      * @return Objective violation at position i
      */
-    private long objViolAtPos(int i, ArrayList<Car> allCars){
+    protected long objViolAtPos(int i, ArrayList<Car> allCars){
         long nbTotalViol[] = new long[2]; //Order : highprio, lowprio, paint batches
         int[] multObjective = dat.getClassObjective().getMultForCompute();
         

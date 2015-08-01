@@ -88,7 +88,7 @@ public class DataProblem {
     private int nbCars;             //total number of cars (day J and J-1)
 //    private int[] windowSizes;
 //    private int[] maxCarInWindows;
-    
+
     
     /**
      * Class for filtering files name extensions.

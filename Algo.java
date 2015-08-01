@@ -30,7 +30,7 @@ public abstract class Algo {
      * @param allCars Sheduled cars in day. (J and J-1)
      * @return the solution cost (better is lower)
      */
-    public Solution InitialyzeSolutionValue(ArrayList<Car> allCars, Time timeStart){
+    protected Solution InitialyzeSolutionValue(ArrayList<Car> allCars, Time timeStart){
         
         long nbTotalViol[] = new long[3]; //Order : highprio, lowprio, paint batches
         int[] multObjective = dat.getClassObjective().getMultForCompute();

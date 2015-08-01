@@ -7,6 +7,7 @@ package carsequencing;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -15,8 +16,7 @@ import java.util.Objects;
  */
 public class Solution implements Comparable<Solution>{
     
-    private ArrayList<Car> cars; //If too big (because of deep copy, we can use
-                                //ArrayList<Long> instead (where every long is an id)
+    private ArrayList<Car> cars; //Represents all cars (J and J-1)
     
     private ArrayList<Long> objViolAtPosition;   //save alls objective violation for all positions
     
@@ -53,6 +53,37 @@ public class Solution implements Comparable<Solution>{
         this.paintViol = toCopy.getPaintViol();
         this.bestfound = toCopy.isBestfound();
     }
+    
+    public Solution(){}
+    
+    /**
+     * Construct a Solution from existing car sequence.
+     * @param allCars
+     * @param dat 
+     */
+    public Solution(ArrayList<Car> allCars, DataProblem dat){
+        solutionInit(cars, dat);
+    }
+    
+    /**
+     * Construct a random solution.
+     * @param dat 
+     */
+    public Solution(DataProblem dat) {
+        
+        //Fist we take another order for cars
+        ArrayList<Car> unmovableCars = new ArrayList<>(dat.getHaveNotToBeSheduledcars());
+        ArrayList<Car> carsToBeScheduled = new ArrayList<>(dat.getHaveToBeSheduledcars());
+        
+        Collections.shuffle(carsToBeScheduled);
+        
+        ArrayList<Car> cars = new ArrayList<>(unmovableCars);
+        cars.addAll(carsToBeScheduled);
+        
+        //Then we compute solution for this
+        solutionInit(cars, dat);
+    }
+   
 
     public ArrayList<Car> getCars() {
         return cars;
@@ -85,8 +116,6 @@ public class Solution implements Comparable<Solution>{
     public void setTimeToSolve(long timeToSolve) {
         this.timeToSolve = timeToSolve;
     }
-    
-    
     
 
     @Override
@@ -123,9 +152,28 @@ public class Solution implements Comparable<Solution>{
         return true;
     }
     
+    /**
+     * method called from constructor : finish to construct a solution from existing car Sequence.
+     * @param allCars
+     * @param dat 
+     */
+    private void solutionInit(ArrayList<Car> allCars, DataProblem dat){
+       Swapper swap = new Swapper(dat);
+       this.cars = new ArrayList<>(allCars);
+       
+        this.objViolAtPosition = new ArrayList<>();
+        for (int i = 0; i < dat.getNbCars(); i++) {
+            this.objViolAtPosition.add(swap.objViolAtPos(i, dat.getCars()));  //Normally we want just for first starting windows, not first car... so WARNING !
+        }
+       
+        Solution temp = swap.InitialyzeSolutionValue(allCars, new Time());
+        this.objSol = temp.getObjSol();
+        this.timeToSolve = 0L;
+        this.bestfound = false;
+        this.paintViol = temp.getPaintViol();
+    }
     
     
-
     @Override
     public int compareTo(Solution o) {
         
@@ -140,4 +188,6 @@ public class Solution implements Comparable<Solution>{
                 + new Time(timeToSolve).toString()
                 + "\n\tBestFound : " + bestfound;// + "\n\tOrder : \n" + cars.toString().replaceAll(",", "\t,").replaceAll("\\[", "\t\\[");
     }
+
+    
 }

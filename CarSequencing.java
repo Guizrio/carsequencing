@@ -15,6 +15,8 @@ import java.util.Date;
  * @author Guillaume
  */
 public class CarSequencing {
+    
+    public static final long maxTimeToSolve = 30000000000L; 
 
     /**
      * @param args the command line arguments
