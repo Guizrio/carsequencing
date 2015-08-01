@@ -62,7 +62,7 @@ public class Solution implements Comparable<Solution>{
      * @param dat 
      */
     public Solution(ArrayList<Car> allCars, DataProblem dat){
-        solutionInit(cars, dat);
+        solutionInit(allCars, dat);
     }
     
     /**
@@ -77,11 +77,11 @@ public class Solution implements Comparable<Solution>{
         
         Collections.shuffle(carsToBeScheduled);
         
-        ArrayList<Car> cars = new ArrayList<>(unmovableCars);
-        cars.addAll(carsToBeScheduled);
+        ArrayList<Car> tempCars = new ArrayList<>(unmovableCars);
+        tempCars.addAll(carsToBeScheduled);
         
         //Then we compute solution for this
-        solutionInit(cars, dat);
+        solutionInit(tempCars, dat);
     }
    
 

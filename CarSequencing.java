@@ -37,8 +37,9 @@ public class CarSequencing {
 //        Solution sol = algo.solve(time);
 //        System.out.println(sol);
 //        
-        Algo algori = new BetterSwap(dat);
-        Solution sol2 = algori.solve(time);
+        //Algo algori = new BetterSwap(dat);
+        GeneticAlgo algori = new GeneticAlgo(dat);
+        Solution sol2 = algori.solve();
         System.out.println(sol2);
         
         System.out.println("sol2 Validate ? " + SolutionValidator.validate(sol2, dat));

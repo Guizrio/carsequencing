@@ -23,7 +23,9 @@ public class Car {
     private ArrayList<RatioConstraint> highRatioConstraint; //Idem
     private ArrayList<RatioConstraint> lowRatioConstraint;  //Idem
     
-//    private int[] constrained; 
+//    private int[] constrained;
+    
+    public Car(){}
     
     /**
      * 
