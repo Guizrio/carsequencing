@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class CarSequencing {
     
-    public static final long maxTimeToSolve = 30000000000L; 
+    public static final long maxTimeToSolve = 2000L; 
 
     /**
      * @param args the command line arguments
@@ -27,19 +27,19 @@ public class CarSequencing {
                                                     + File.separator
                                                     + "039_38_4_RAF_EP_ch1";
         
-        
-        long time = 30000000000L;  // 3 secondes
-        
         DataProblem dat = new DataProblem(folderPath);
 //        Algorithm algo = new Algorithm(dat);
 //        Solution sol = algo.solve(time);
 //        System.out.println(sol);
 //        
         //Algo algori = new BetterSwap(dat);
-        GeneticAlgo algori = new GeneticAlgo(dat);
+        GeneticAlgo algori = new GeneticAlgo(dat, false);
         Solution sol2 = algori.solve();
         System.out.println(sol2);
+        //System.out.println(sol2.getCars());
         
+//        System.out.println(algori.getStringParams());
+        System.out.println(algori.getParams());
         System.out.println("Is it a valid solution ? " + SolutionValidator.validate(sol2, dat));
       
 //        

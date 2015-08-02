@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  *
  * @author Guillaume
  */
-public class Algorithm {
+public class Algorithm implements Solver{
     
     private final DataProblem dat;
     
@@ -24,9 +24,10 @@ public class Algorithm {
     }
     
     /**
-     * Just a naive resolution by simply shuffle positions...
+     * Resolution by simply swapping random positions (without optimization of objective calculation)...
      * @return 
      */
+    @Override
     public Solution solve(){
         Time tim = new Time();
         
@@ -55,7 +56,11 @@ public class Algorithm {
         while(new Time().timeLongElapsedSince(tim.getLastSavedTime()) <= CarSequencing.maxTimeToSolve){
             nbIterations++;
             long Incumbent = sol.getObjSol();
-            Collections.swap(shedulCars, 150, 150);
+            
+            int pos1 = (int)(Math.random()*shedulCars.size());
+            int pos2 = (int)(Math.random()*shedulCars.size());
+            
+            Collections.swap(shedulCars, pos1, pos2);
             
             allCars = new ArrayList();
             allCars.addAll(nonShedulCars);
@@ -141,5 +146,24 @@ public class Algorithm {
                 new Time().timeLongElapsedSince(timeStart.getLastSavedTime()));
         
         return sol;
+    }
+
+    @Override
+    public ArrayList<String> getParams() {
+       ArrayList<String> param = new ArrayList<>();
+       param.add("No parameters for this algorithm except time for resolution : " + new Time(CarSequencing.maxTimeToSolve));
+       return param;
+    }
+
+    @Override
+    public String getDescription() {
+        String str = "Naïve Algorithm : \n"
+                + "\t- Resolution by simply swapping random cars positions.\n"
+                + "\t- A swap result is keeped only if it's better than incumbent,\n"
+                + "\t  particularly, there is only one swap (between 2 car) performed before valuate solution...\n"
+                + "\t- This algorithm is without optimization of objective calculation\n"
+                + "\t  (all violations are calculated again after every swap).\n"
+                + "\t- It stop when time out";
+        return str;
     }
 }

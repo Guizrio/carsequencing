@@ -12,24 +12,25 @@ import java.util.LinkedList;
  *
  * @author Guillaume
  */
-public class GeneticAlgo {
-   private String description = "Algorithme génétique"; 
+public class GeneticAlgo { 
    private int nbSolutions = 40;
-   private int maxUselessIterations = 60;
+   private int maxUselessIterations = 70;
    private double propPopMothers = 0.25;
    private double propPopFathers = 0.5;
-   private double propPopChildrenCouldMuting = 0.05;
-   private double propGenInChromozomCouldMute = 0.1;    //Represent the maximal proportion of mutation in a children' gene which has to mute 
+   private double propPopChildrenCouldMuting = 0.2;
+   private double propGenInChromozomCouldMute = 0.5;    //Represent the maximal proportion of mutation in a children' gene which has to mute 
    private int nbGenInChromozomCouldMute;  //bind with propGenInChromozomCouldMute multiply by number of car must be scheduled
-   private boolean continuity = false;
+   private boolean continuity = true;
+   private boolean cataclysmeActivated = false;
    
    private double nbCarsToSchedule;
    private DataProblem dat;
    
    
-   public GeneticAlgo(DataProblem dat){
+   public GeneticAlgo(DataProblem dat, boolean continuity){
        this.dat = dat;
        nbGenInChromozomCouldMute = (int)(propGenInChromozomCouldMute * dat.getNbCarsDayJ());
+       this.continuity = continuity;
    }
    
    public GeneticAlgo(    int nbSolutions, 
@@ -78,60 +79,80 @@ public class GeneticAlgo {
         
         Time time = new Time();
         
-        int iterations = 0; // itérations sans changement de la solution optimale
         int compteur = 0;   // nombre total d'itérations
         ArrayList<Solution> solutions = new ArrayList<>();
         
         solutions.add(new Solution(dat.getCars(), dat));
         Swapper swapBibi = new Swapper(dat);
-        solutions.add(swapBibi.solve());
+        //solutions.add(swapBibi.solve());
         
         System.out.println("Base solution from swapper added");
         
         for (int i = 0 ; i < nbSolutions-2 ; i++) {
             Solution newSol = new Solution(dat);
-            newSol.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
             solutions.add(newSol);
         }
         
         Solution solBest = solutions.get(0);
-
-        while (iterations < maxUselessIterations && new Time().timeLongElapsedSince(time.getLastSavedTime()) < CarSequencing.maxTimeToSolve) {
-            compteur++;
-            System.out.println("Generation number " + compteur);
+        boolean firstPass = true;
+        
+        while(new Time().timeLongElapsedSince(time.getLastSavedTime()) < CarSequencing.maxTimeToSolve){
             
-            QuickSort.quicksort(solutions, 0, solutions.size() - 1);
-            //System.out.println(solBest.getValObj(graph) + "    " + solutions.get(0).getValObj(graph));
+            int iterations = 0; // itérations sans changement de la solution optimale
             
-            System.out.println(solutions);
-            
-            if (solutions.get(0).getObjSol() < solBest.getObjSol()) {
-                iterations = 0;
-            }
-            else {
-                iterations++;
-            }
-            
-            if(solutions.get(0).getObjSol() < solBest.getObjSol()){
-                solBest = solutions.get(0);
-                solBest.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
-            }
-            
-            for (int i = 0 ; i < solutions.size() * propPopMothers ; i++) {
-                int rdm = (int)( Math.random()*(solutions.size() * propPopFathers) );
-                ResultatMating result = this.croisement(solutions.get(i), solutions.get(rdm));      
+            if(!firstPass && cataclysmeActivated){ 
+                //Big cataclysme, no survivor, only new species.
+                //Maybe we could had a feature that allow few survivors with probability in next version
                 
-                //Check if has to mute
-                if(Math.random() <= propPopChildrenCouldMuting){
-                    result = mute(result);
+                for (int i = 0 ; i < solutions.size() ; i++) {
+                    Solution newSol = new Solution(dat);
+                    newSol.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
+                    solutions.set(i,newSol);
                 }
-                
-                int indexModif = solutions.size() - 2*i - 1;
-                
-                solutions.set(indexModif, result.getSolution1());
-                solutions.set(indexModif-1, result.getSolution2());
+            }
+            
+            firstPass = false;
+            
+            while (iterations < maxUselessIterations && new Time().timeLongElapsedSince(time.getLastSavedTime()) < CarSequencing.maxTimeToSolve) {
+                compteur++;
+                System.out.println("Generation number " + compteur);
+                System.out.println("Degenerancy " + iterations);
+
+                QuickSort.quicksort(solutions, 0, solutions.size() - 1);
+                //System.out.println(solBest.getValObj(graph) + "    " + solutions.get(0).getValObj(graph));
+
+                System.out.println(solutions);
+
+                if (solutions.get(0).getObjSol() < solBest.getObjSol()) {
+                    iterations = 0;
+                }
+                else {
+                    iterations++;
+                }
+
+                if(solutions.get(0).getObjSol() < solBest.getObjSol()){
+                    solBest = solutions.get(0);
+                    solBest.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
+                }
+
+                for (int i = 0 ; i < solutions.size() * propPopMothers ; i++) {
+                    int rdm = (int)( Math.random()*(solutions.size() * propPopFathers) );
+                    ResultatMating result = this.croisement(solutions.get(i), solutions.get(rdm));      
+
+                    //Check if has to mute
+                    if(Math.random() <= propPopChildrenCouldMuting){
+                        result = mute(result);
+                    }
+
+                    int indexModif = solutions.size() - 2*i - 1;
+
+                    solutions.set(indexModif, result.getSolution1());
+                    solutions.set(indexModif-1, result.getSolution2());
+                }
             }
         }
+        
+        
         
         return solBest;
     }
@@ -175,7 +196,7 @@ public class GeneticAlgo {
                 int k = (int)(Math.random() * restantCarsInFather.size());
                 
                 int index1 = mere.getCars().indexOf(restantCarsInMother.get(j));
-                int index2 = pere.getCars().indexOf(restantCarsInFather.get(j));
+                int index2 = pere.getCars().indexOf(restantCarsInFather.get(k));
                 
                 carChildren1.set(index1,restantCarsInMother.get(j));
                 carChildren2.set(index2,restantCarsInFather.get(k));
@@ -188,12 +209,25 @@ public class GeneticAlgo {
                 
             }
             
-            for (int i = dat.getNbCarsDayJMinus1(); i < dat.getNbCars(); i++) {
+            int nbNullCarChildren1 = 0;
+            int nbNullCarChildren2 = 0;
+            
+            for (int i = 0; i < dat.getNbCars(); i++) {
                 if(carChildren1.get(i).getDat() == null){
-                    carChildren1.set(i, restantCarInFatherForChild1.getFirst());
+                    nbNullCarChildren1++;
                 }
                 if(carChildren2.get(i).getDat() == null){
-                    carChildren2.set(i, restantCarInMotherForChild2.getFirst());
+                    nbNullCarChildren2++;
+                }
+                
+            }
+            
+            for (int i = dat.getNbCarsDayJMinus1(); i < dat.getNbCars(); i++) {
+                if(carChildren1.get(i).getDat() == null){
+                    carChildren1.set(i, restantCarInFatherForChild1.removeFirst());
+                }
+                if(carChildren2.get(i).getDat() == null){
+                    carChildren2.set(i, restantCarInMotherForChild2.removeFirst());
                 }
             }
         }      
@@ -249,19 +283,22 @@ public class GeneticAlgo {
     }
     
     public String getDescription(){
-        return description;
+        String str = "Genetic Algorithm";
+        return str;
     }
     
     
     public ArrayList<String> getParams(){
         ArrayList<String> params = new ArrayList<>();
         
-        params.add("population : " + nbSolutions);
-        params.add("proportion de mères dans la population : " + propPopMothers);
-        params.add("proportion de pères dans la population : " + propPopFathers);
-        params.add("proportion of gene could mute : " + propGenInChromozomCouldMute);
-        params.add("proportion/catégorie d'individus pouvant muter : " + propPopChildrenCouldMuting);
-        params.add("nombre maximum d'itérations inchangeantes avant d'arêter l'algo : " + maxUselessIterations);
+        params.add("\npopulation : " + nbSolutions);
+        params.add("\nmothers' proportion in global population : " + propPopMothers);
+        params.add("\nfathers' proportion in global population : " + propPopFathers);
+        params.add("\nmax proportion of gene could mute : " + propGenInChromozomCouldMute);
+        params.add("\nproportion of mutant children in children population : " + propPopChildrenCouldMuting);
+        params.add("\nnumber of generation without increasing objective incumbent solution : " + maxUselessIterations);
+        params.add("\nCataclysms activated : " + cataclysmeActivated);
+        params.add("\nCross-over continue function : " + continuity);
         
         return params;
     }

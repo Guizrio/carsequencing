@@ -340,4 +340,23 @@ public class Swapper extends Algo{
         Solution sol2 = algori.solve();
         System.out.println(sol2);
     }
+
+    @Override
+    public ArrayList<String> getParams() {
+       ArrayList<String> param = new ArrayList<>();
+       param.add("No parameters for this algorithm except time for resolution : " + new Time(CarSequencing.maxTimeToSolve));
+       return param;
+    }
+
+    @Override
+    public String getDescription() {        
+        String str = "Basic Algorithm : \n"
+                + "\t- Resolution by swapping cars positions.\n"
+                + "\t- A swap result is keeped only if it's better than incumbent,\n"
+                + "\t  particularly, there is only one swap (between 2 car) performed before valuate solution...\n"
+                + "\t- This algorithm is optimized for objective calculation\n"
+                + "\t  (only violations added by the swap are calculated).\n"
+                + "\t- It stop if it had tested all swap without found any better than incumbent";
+        return str;
+    }
 }

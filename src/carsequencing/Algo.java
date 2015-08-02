@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author g.rio
  */
-public abstract class Algo {
+public abstract class Algo implements Solver{
     
     protected final DataProblem dat;
     protected  ArrayList<Long> objViolAtPosition;   //save alls objective violation for all positions 
@@ -22,6 +22,7 @@ public abstract class Algo {
         this.objViolAtPosition = new ArrayList<>();
     }
     
+    @Override
     public abstract Solution solve();
     
     /**

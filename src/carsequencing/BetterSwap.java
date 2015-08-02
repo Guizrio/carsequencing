@@ -64,7 +64,7 @@ public class BetterSwap extends Swapper{
                 System.out.println("Local solution validate ? " + SolutionValidator.validate(localIncumbent, dat));
                  System.out.println("Begin initialization of another seed");
                 //Portion of car which will could be swapped to break local convergence
-               int  nbToChange = (int) (dat.getNbCarsDayJ()/10);
+               int  nbToChange = (int) (dat.getNbCarsDayJ()/5);
                
                Time tt = new Time();
                 for (int i = 0; i < nbToChange; i++) {
@@ -75,6 +75,8 @@ public class BetterSwap extends Swapper{
                 }
                 System.out.println("Time passed to initialyze new seed : " + new Time().timeElapsedSince(tt.getLastSavedTime()));
             }
+            
+            //Attempt to resolve with multiples swaps before valuate solution :
             
 //            if(bestfound && new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= timeToSolve){
                 
@@ -137,6 +139,24 @@ public class BetterSwap extends Swapper{
         }
         System.out.println("Nombre d'itérations : " + nbIterations);
         return globalIncumbent;
+    }
+    
+    @Override
+    public ArrayList<String> getParams() {
+       ArrayList<String> param = new ArrayList<>();
+       param.add("No parameters for this algorithm except time for resolution : " + new Time(CarSequencing.maxTimeToSolve));
+       return param;
+    }
+
+    @Override
+    public String getDescription() {        
+        String str = "Basic Algorithm Extension : \n"
+                + "\t- Same comportment as for Swapper solve method,\n"
+                + "\t  except that if remains time and the Swapper part finish,"
+                + "\t  then the algorithm take a random deviated solution from "
+                + "\t  the incumbent and restart same process."
+                + "\t- It stop when time is out";
+        return str;
     }
     
 }
