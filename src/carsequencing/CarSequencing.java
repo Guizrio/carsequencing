@@ -6,9 +6,14 @@
 package carsequencing;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,168 +21,137 @@ import java.util.Date;
  */
 public class CarSequencing {
     
-    public static final long maxTimeToSolve = 2000L; 
+    public static final long maxTimeToSolve = 140000000000L;
+    private static PrintWriter fil;
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        String folderPath = new File("").getAbsolutePath()  + File.separator 
-                                                    + "Instances_set_A"
-                                                    + File.separator
-                                                    + "039_38_4_RAF_EP_ch1";
+    public static void main(String[] args) throws IllegalAccessException, IllegalStateException {
         
-        DataProblem dat = new DataProblem(folderPath);
-//        Algorithm algo = new Algorithm(dat);
-//        Solution sol = algo.solve(time);
-//        System.out.println(sol);
-//        
-        //Algo algori = new BetterSwap(dat);
-        GeneticAlgo algori = new GeneticAlgo(dat, false);
-        Solution sol2 = algori.solve();
-        System.out.println(sol2);
-        //System.out.println(sol2.getCars());
+        //First we take SOlvers we want to use
+        String[] solvers = {"Algorithm", "Swapper", "BetterSwap", "GeneticAlgo"};
         
-//        System.out.println(algori.getStringParams());
-        System.out.println(algori.getParams());
-        System.out.println("Is it a valid solution ? " + SolutionValidator.validate(sol2, dat));
-      
-//        
-//        ArrayList<Long> tre = new ArrayList<Long>(new ArrayList<Long>());
-//        
-//        
-//        RatioConstraint i = new RatioConstraint("1/10", 10, 1, true, "premiere contrainte",10);
-//        RatioConstraint j = new RatioConstraint("2/10", 10, 1, true, "deuxième contrainte",10);
-//        
-//        ArrayList<Car> cars = new ArrayList<>();
-//        
-//        Car car1 = new Car(new Date(), 1, 1, 2);
-//        car1.addRationConstraint(i);
-//        
-//        Car car2 = new Car(new Date(), 2, 2, 2);
-//        
-//        Car car3 = new Car(new Date(), 3, 3, 2);
-//        car3.addRationConstraint(i);
-//        car3.addRationConstraint(j);
-//        
-//        Car car4 = new Car(new Date(), 4, 4, 2);
-//        car4.addRationConstraint(j);
-//        
-//        cars.add(car1);
-//        cars.add(car2);
-//        cars.add(car3);
-//        cars.add(car4);
-//        
-//        ArrayList<Car> cars2 = new ArrayList<>(cars);
+        //Second we initialyze Instances Kind
+        String[] instancesKind = {"Instances_set_A", "Instances_set_X"};
         
-//        ArrayList<RatioConstraint> highPrioConstI = cars2.get(0).getHighRatioConstraint();
-//        
-//        System.out.println(highPrioConstI.size());
-//        System.out.println(cars2.get(0).getHighRatioConstraint().size());
-//        
-//        System.out.println("");
-//        Collections.swap(cars2, 0, 1);
-//        
-//        System.out.println(highPrioConstI.size());
-//        System.out.println(cars2.get(0).getHighRatioConstraint().size());
+        //Set number of launch per solver and problem (to get means for non determinist solvers)
+        int repeatSolve = 2;
         
+        //Create Solutions folder
+        String solutionsPath = new File("").getAbsolutePath() + File.separator + "Solutions";
+        new File(solutionsPath).mkdirs();
         
+        //List instances
+        HashMap<String,String[]> instancesNames = new HashMap<>();
         
+        for (int i = 0; i < instancesKind.length; i++) {
+            String instancesKind1 = instancesKind[i];
+            String folderPath = new File("").getAbsolutePath()+ File.separator 
+                                                    + instancesKind1;
+            boolean folderPathExists = new File(folderPath).exists();
+            if(!folderPathExists){
+                throw new IllegalAccessException("Could not find instances of kind " + instancesKind1);
+            }else{
+                
+                //We check for all files of instance kind instanceKind1
+                String[] instancesInCurrentFolder = new java.io.File(folderPath).list();
+                Arrays.sort(instancesInCurrentFolder);
+                
+                instancesNames.put(instancesKind1, instancesInCurrentFolder);
+                
+                //We create folder solution
+                new File(solutionsPath + File.separator + instancesKind1).mkdirs();
+                
+            }
+        }
         
-//        ArrayList<Car> highPrioConstI = new ArrayList<>();
-//        highPrioConstI.add(cars2.get(0));
-//        
-//        System.out.println(highPrioConstI.get(0).getHighRatioConstraint().size());
-//        System.out.println(cars2.get(0).getHighRatioConstraint().size());
-//        
-//        System.out.println("");
-//        //Collections.swap(cars2, 0, 1);
-//        
-//        car1 = car2; //Ne touche pas cars2 car c'est une deep copy...
-//        
-//        System.out.println(highPrioConstI.get(0).getHighRatioConstraint().size());
-//        System.out.println(cars2.get(0).getHighRatioConstraint().size());
-//        System.out.println(car1.getHighRatioConstraint().size());
-        
-        
-        
-//        ArrayList<Car> highPrioConstI = new ArrayList<>();
-//        highPrioConstI.add(cars.get(0));
-//        
-//        System.out.println(highPrioConstI.get(0).getHighRatioConstraint().size());
-//        System.out.println(cars.get(0).getHighRatioConstraint().size());
-//        
-//        System.out.println("");
-////        Collections.swap(cars, 0, 1);
-//        
-//        car1 = car2; //Devrait toucher cars... MAIS NON !!!! (oulalala ma tête...)
-//        
-//        System.out.println(highPrioConstI.get(0).getHighRatioConstraint().size());
-//        System.out.println(cars.get(0).getHighRatioConstraint().size());
-//        System.out.println(car1.getHighRatioConstraint().size());
-        
-        
-        
-        
-//        ArrayList<Integer> entiers = new ArrayList<>();
-//        
-//        Integer entier1 = new Integer(3);
-//        Integer entier2 = new Integer(4);
-//        
-//        entiers.add(entier1);
-//        entiers.add(entier2);
-//        
-//        entier1 = new Integer(2);
-//        
-//        entiers.add(entier1);
-//        
-//        entier1 = entier2;
-//        
-//        entiers.add(entier1);
-//        
-//        for (int k = 0; k < entiers.size(); k++) {
-//            System.out.println("entier1 = " + entiers.get(k));
-//        }
-        
-        
-//        ArrayList<int[]> entiers = new ArrayList<>();
-//        
-//        int[] k ={1};
-//        int[] l= {2};
-//        
-//        entiers.add(k);
-//        entiers.add(l);
-//        
-//        k=l;
-//        
-//        entiers.add(k);
-//        
-//        for (int m = 0; m < entiers.size(); m++) {
-//            System.out.println(entiers.get(m));
-//        }
-//        
-//        ArrayList<int[]> entiersBis = entiers;
-//        
-//        entiersBis.set(0, l);
-//        
-//        for (int m = 0; m < entiers.size(); m++) {
-//            System.out.println(entiers.get(m));
-//        }
-//        
-//        
-//        
-//        Car[] voitures = new Car[2];
-//        voitures[0] = car1;
-//        voitures[1] = car2;
-//        
-//        car1=car2;
-//        
-//        voitures[0].setId(10);
-//        
-//        for (int m = 0; m < voitures.length; m++) {
-//            System.out.println(voitures[m].getId());
-//        }
-        
+        //Now we could solve the problems :
+        for (String solverName : solvers) {  //solvers parcour
+            
+            for(String key : instancesNames.keySet()){ //Kind of instance parcour
+                
+                for(String instance : instancesNames.get(key)){ //instance name parcour
+                    
+                    String instancePath = new File("").getAbsolutePath() + File.separator 
+                                                + key + File.separator 
+                                                + instance;
+                    
+                    String solutionPath = solutionsPath + File.separator 
+                                                      + key + File.separator;
+                    
+                    String FileResult = solutionPath + solverName + " - " 
+                                                        + instance + ".txt";
+                    
+                    fil = null;  //In case of fail of next block
+                    try {
+                        fil = new PrintWriter(new FileWriter(FileResult, false));
+                    } catch (IOException ex) {
+                        Logger.getLogger(CarSequencing.class.getName()).log(Level.SEVERE, null, ex);
+                        throw new IllegalStateException("Problem in file solution creation.");
+                    }
+                    
+                    DataProblem dat = new DataProblem(instancePath);
+                    Stats stat = new Stats(3);
+                    fil.println("==================================================================");
+                    fil.println("Solutions given by Algorithm '" + solverName + "' for"
+                            + " instance " + instance 
+                            + "\n\tNumber of cars : " + dat.getNbCars() + " (of day J-1 : " 
+                            + dat.getNbCarsDayJMinus1() + ", of day J : " +dat.getNbCarsDayJ()+")"
+                            + "\n\tEasy to satisfy ratio constraint : " + dat.areEasySatisfyRatioConstraints()
+                            );
+                    fil.println("");
+                    Solver solver = new SolverBuilder(solverName, dat).getSolver();
+                    fil.println("Description : " + solver.getDescription());
+                    fil.println("");
+                    fil.println("Parameters : " + solver.getParams());
+                    fil.println("");
+                    fil.println("Computer type : ");
+                    fil.println("\t- Mother board : Z97");
+                    fil.println("\t- Processor    : i7 4790k @ 4.0Ghz");
+                    fil.println("\t- RAM          : 16GB");
+                    fil.println("==================================================================");
+                    fil.println("");
+                    fil.println("");
+                    fil.println("");
+                    fil.flush();
+                    
+                    Solution initSol = new Solution(dat.getCars(), dat);
+                    
+                    for (int i = 0; i < repeatSolve; i++) {
+                        solver = new SolverBuilder(solverName, dat).getSolver();
+                        
+                        Solution sol = solver.solve();
+                        
+                        if(!SolutionValidator.validate(sol, dat)){
+                            throw new IllegalStateException("the solution is not valid !");
+                        }
+                        
+                        boolean equalToInitialScheduling = false;
+                        if(sol.getObjSol() == initSol.getObjSol()){
+                            equalToInitialScheduling = true;
+                        }
+                        
+                        stat.setT(sol.getTimeToSolve());
+                        stat.setZ((double)sol.getObjSol());
+                        
+                        fil.println("Solution n° " + i);
+                        fil.println("Objectif value : " + sol.getObjSol());
+                        fil.println("Time to solve : " +sol.getTimeToSolve());
+                        fil.println("Scheduling : " + sol.getCars());
+                        fil.println("Does it have same objective value than initial scheduling : " + equalToInitialScheduling);
+                        fil.println("");
+                        fil.println("");
+                        fil.flush();
+                    }
+                    fil.println("");
+                    fil.println("");
+                    fil.println(stat.result());
+                    fil.flush();
+                    fil.close();
+                }
+            }
+        }
     }
     
 }

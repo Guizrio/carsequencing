@@ -12,7 +12,7 @@ import java.util.LinkedList;
  *
  * @author Guillaume
  */
-public class GeneticAlgo { 
+public class GeneticAlgo implements Solver{ 
    private int nbSolutions = 40;
    private int maxUselessIterations = 70;
    private double propPopMothers = 0.25;

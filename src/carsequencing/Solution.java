@@ -188,6 +188,6 @@ public class Solution implements Comparable<Solution>{
                 + new Time(timeToSolve).toString()
                 + "\n\tBestFound : " + bestfound;// + "\n\tOrder : \n" + cars.toString().replaceAll(",", "\t,").replaceAll("\\[", "\t\\[");
     }
-
+    
     
 }

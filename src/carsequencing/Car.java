@@ -23,6 +23,8 @@ public class Car {
     private ArrayList<RatioConstraint> highRatioConstraint; //Idem
     private ArrayList<RatioConstraint> lowRatioConstraint;  //Idem
     
+    private boolean printInColumn = false;
+    
 //    private int[] constrained;
     
     public Car(){}
@@ -153,7 +155,12 @@ public class Car {
 
     @Override
     public String toString() {
-        return "Id = " + id + "\n"; //To change body of generated methods, choose Tools | Templates.
+        if(printInColumn){
+            return "Id = " + id + "\n";
+        }else{
+            return "Id = " + id;
+        }
+        
     }
     
 }
