@@ -29,14 +29,14 @@ public class CarSequencing {
      */
     public static void main(String[] args) throws IllegalAccessException, IllegalStateException {
         
-        //First we take SOlvers we want to use
-        String[] solvers = {"Algorithm", "Swapper", "BetterSwap", "GeneticAlgo"};
+        //First we take Solvers we want to use
+        String[] solvers = {"GeneticAlgo"};//{"Algorithm", "Swapper", "BetterSwap", "GeneticAlgo"};
         
         //Second we initialyze Instances Kind
         String[] instancesKind = {"Instances_set_A", "Instances_set_X"};
         
         //Set number of launch per solver and problem (to get means for non determinist solvers)
-        int repeatSolve = 2;
+        int repeatSolve = 5;
         
         //Create Solutions folder
         String solutionsPath = new File("").getAbsolutePath() + File.separator + "Solutions";
@@ -99,6 +99,7 @@ public class CarSequencing {
                             + "\n\tNumber of cars : " + dat.getNbCars() + " (of day J-1 : " 
                             + dat.getNbCarsDayJMinus1() + ", of day J : " +dat.getNbCarsDayJ()+")"
                             + "\n\tEasy to satisfy ratio constraint : " + dat.areEasySatisfyRatioConstraints()
+                            + "\n\tInitial solution value : " + new Solution(dat.getCars(), dat).getObjSol()
                             );
                     fil.println("");
                     Solver solver = new SolverBuilder(solverName, dat).getSolver();
@@ -137,7 +138,7 @@ public class CarSequencing {
                         
                         fil.println("Solution n° " + i);
                         fil.println("Objectif value : " + sol.getObjSol());
-                        fil.println("Time to solve : " +sol.getTimeToSolve());
+                        fil.println("Time to solve : " + new Time(sol.getTimeToSolve()));
                         fil.println("Scheduling : " + sol.getCars());
                         fil.println("Does it have same objective value than initial scheduling : " + equalToInitialScheduling);
                         fil.println("");

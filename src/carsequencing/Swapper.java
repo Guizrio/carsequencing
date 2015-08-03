@@ -294,7 +294,7 @@ public class Swapper extends Algo{
         long nbIterations = 0; //number of iterations performed by algorithm
         
         //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= CarSequencing.maxTimeToSolve){
+        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) < CarSequencing.maxTimeToSolve){
             boolean bestfound=true;
             for (int i = dat.getNbCarsDayJMinus1(); i < dat.getNbCars()-1; i++) {
                 for (int j = i+1; j < dat.getNbCars(); j++) {

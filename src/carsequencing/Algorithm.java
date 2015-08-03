@@ -53,7 +53,7 @@ public class Algorithm implements Solver{
         long nbIterations = 0; //number of iterations performed by algorithm
         
         //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(tim.getLastSavedTime()) <= CarSequencing.maxTimeToSolve){
+        while(new Time().timeLongElapsedSince(tim.getLastSavedTime()) < CarSequencing.maxTimeToSolve){
             nbIterations++;
             long Incumbent = sol.getObjSol();
             

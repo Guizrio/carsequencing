@@ -36,7 +36,7 @@ public class BetterSwap extends Swapper{
         long nbIterations = 0; //number of iterations performed by algorithm
         
         //First we takes just car which have to be sorted
-        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) <= CarSequencing.maxTimeToSolve){
+        while(new Time().timeLongElapsedSince(timeStart.getLastSavedTime()) < CarSequencing.maxTimeToSolve){
             boolean bestfound=true;
             System.out.println(new Time().timeElapsedSince(timeStart.getLastSavedTime()));
             for (int i = dat.getNbCarsDayJMinus1(); i < dat.getNbCars()-1; i++) {
@@ -61,7 +61,7 @@ public class BetterSwap extends Swapper{
             if(bestfound){
                 System.out.println("Local swap convergence reached, best cost : "
                         + localIncumbent.getObjSol());
-                System.out.println("Local solution validate ? " + SolutionValidator.validate(localIncumbent, dat));
+                //System.out.println("Local solution validate ? " + SolutionValidator.validate(localIncumbent, dat));
                  System.out.println("Begin initialization of another seed");
                 //Portion of car which will could be swapped to break local convergence
                int  nbToChange = (int) (dat.getNbCarsDayJ()/5);
@@ -73,7 +73,7 @@ public class BetterSwap extends Swapper{
                     
                     localIncumbent = swap(localIncumbent, aleaPos1, aleaPos2);
                 }
-                System.out.println("Time passed to initialyze new seed : " + new Time().timeElapsedSince(tt.getLastSavedTime()));
+                //System.out.println("Time passed to initialyze new seed : " + new Time().timeElapsedSince(tt.getLastSavedTime()));
             }
             
             //Attempt to resolve with multiples swaps before valuate solution :

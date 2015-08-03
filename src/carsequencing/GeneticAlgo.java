@@ -13,15 +13,15 @@ import java.util.LinkedList;
  * @author Guillaume
  */
 public class GeneticAlgo implements Solver{ 
-   private int nbSolutions = 40;
+   private int nbSolutions = 200;
    private int maxUselessIterations = 70;
    private double propPopMothers = 0.25;
    private double propPopFathers = 0.5;
    private double propPopChildrenCouldMuting = 0.2;
    private double propGenInChromozomCouldMute = 0.5;    //Represent the maximal proportion of mutation in a children' gene which has to mute 
    private int nbGenInChromozomCouldMute;  //bind with propGenInChromozomCouldMute multiply by number of car must be scheduled
-   private boolean continuity = true;
-   private boolean cataclysmeActivated = false;
+   private boolean continuity = false;
+   private boolean cataclysmeActivated = true;
    
    private double nbCarsToSchedule;
    private DataProblem dat;
@@ -72,7 +72,7 @@ public class GeneticAlgo implements Solver{
        this.nbCarsToSchedule = dat.getNbCarsDayJ();
        this.propGenInChromozomCouldMute = propGenInChromozomCouldMute;
        this.nbGenInChromozomCouldMute = (int)(propGenInChromozomCouldMute * dat.getNbCarsDayJ());
-       this.continuity = continuity;    //parameter for cross-over kind (continuity=true => all genes of mother and father are taken in the order they appear)
+       this.continuity = true;    //parameter for cross-over kind (continuity=true => all genes of mother and father are taken in the order they appear)
    }
     
     public Solution solve() {
@@ -84,7 +84,7 @@ public class GeneticAlgo implements Solver{
         
         solutions.add(new Solution(dat.getCars(), dat));
         Swapper swapBibi = new Swapper(dat);
-        //solutions.add(swapBibi.solve());
+        solutions.add(swapBibi.solve());
         
         System.out.println("Base solution from swapper added");
         
@@ -93,7 +93,8 @@ public class GeneticAlgo implements Solver{
             solutions.add(newSol);
         }
         
-        Solution solBest = solutions.get(0);
+        Solution solBest = new Solution(solutions.get(0));
+        Solution solBest2 = solutions.get(0);
         boolean firstPass = true;
         
         while(new Time().timeLongElapsedSince(time.getLastSavedTime()) < CarSequencing.maxTimeToSolve){
@@ -108,6 +109,7 @@ public class GeneticAlgo implements Solver{
                     Solution newSol = new Solution(dat);
                     newSol.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
                     solutions.set(i,newSol);
+                    solBest2 = solutions.get(0);
                 }
             }
             
@@ -121,18 +123,20 @@ public class GeneticAlgo implements Solver{
                 QuickSort.quicksort(solutions, 0, solutions.size() - 1);
                 //System.out.println(solBest.getValObj(graph) + "    " + solutions.get(0).getValObj(graph));
 
-                System.out.println(solutions);
+//                System.out.println(solutions);
 
-                if (solutions.get(0).getObjSol() < solBest.getObjSol()) {
+                if(solutions.get(0).getObjSol() < solBest2.getObjSol()){
+                    System.out.println("Current Local Best SOlution : " + solBest2);
                     iterations = 0;
-                }
-                else {
+                    solBest2 = solutions.get(0);
+                    solBest2.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
+                    
+                }else{
                     iterations++;
                 }
-
-                if(solutions.get(0).getObjSol() < solBest.getObjSol()){
-                    solBest = solutions.get(0);
-                    solBest.setTimeToSolve(new Time().timeLongElapsedSince(time.getLastSavedTime()));
+                
+                if(solBest.getObjSol() > solBest2.getObjSol()){
+                    solBest = new Solution(solBest2);
                 }
 
                 for (int i = 0 ; i < solutions.size() * propPopMothers ; i++) {
