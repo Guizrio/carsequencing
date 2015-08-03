@@ -299,6 +299,7 @@ public class GeneticAlgo implements Solver{
         params.add("\nnumber of generation without increasing objective incumbent solution : " + maxUselessIterations);
         params.add("\nCataclysms activated : " + cataclysmeActivated);
         params.add("\nCross-over continue function : " + continuity);
+        params.add("\nTime for resolution : " + new Time(CarSequencing.maxTimeToSolve));
         
         return params;
     }
