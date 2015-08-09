@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  */
 public class CarSequencing {
     
-    public static final long maxTimeToSolve = 20000000000L;    //Time resolution allowed for solvers
+    public static final long maxTimeToSolve = 140000000000L;    //Time resolution allowed for solvers (in nanoseconds)
     private static PrintWriter fil;
 
     /**
