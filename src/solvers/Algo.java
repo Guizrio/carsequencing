@@ -3,8 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package carsequencing;
+package solvers;
 
+import data_object.Car;
+import data_object.DataProblem;
+import data_object.RatioConstraint;
+import carsequencing.Solution;
+import tools.Time;
 import java.util.ArrayList;
 
 /**
@@ -31,7 +36,7 @@ public abstract class Algo implements Solver{
      * @param allCars Sheduled cars in day. (J and J-1)
      * @return the solution cost (better is lower)
      */
-    protected Solution InitialyzeSolutionValue(ArrayList<Car> allCars, Time timeStart){
+    public Solution InitialyzeSolutionValue(ArrayList<Car> allCars, Time timeStart){
         
         long nbTotalViol[] = new long[3]; //Order : highprio, lowprio, paint batches
         int[] multObjective = dat.getClassObjective().getMultForCompute();

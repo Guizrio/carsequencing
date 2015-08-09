@@ -5,6 +5,9 @@
  */
 package carsequencing;
 
+import data_object.RatioConstraint;
+import data_object.Car;
+import data_object.DataProblem;
 import java.util.ArrayList;
 
 /**

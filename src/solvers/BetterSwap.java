@@ -3,8 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package carsequencing;
+package solvers;
 
+import data_object.Car;
+import carsequencing.CarSequencing;
+import data_object.DataProblem;
+import carsequencing.Solution;
+import tools.Time;
 import java.util.ArrayList;
 
 /**

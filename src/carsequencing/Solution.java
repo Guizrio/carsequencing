@@ -5,6 +5,10 @@
  */
 package carsequencing;
 
+import tools.Time;
+import data_object.Car;
+import data_object.DataProblem;
+import solvers.Swapper;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collections;

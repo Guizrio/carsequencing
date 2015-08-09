@@ -1,11 +1,20 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package tools;
 
-package carsequencing;
-
+import carsequencing.Solution;
 import java.util.ArrayList;
 
+/**
+ *
+ * @author Guillaume
+ */
 public class QuickSort {
     
-    static void quicksort(ArrayList<Solution> solutions, int low, int high) {
+    public static void quicksort(ArrayList<Solution> solutions, int low, int high) {
         int i = low, j = high;
         Solution pivot = solutions.get(low + (high-low)/2);
 

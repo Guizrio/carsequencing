@@ -5,6 +5,11 @@
  */
 package carsequencing;
 
+import tools.Stats;
+import tools.Time;
+import data_object.DataProblem;
+import solvers.SolverBuilder;
+import solvers.Solver;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,7 +26,7 @@ import java.util.logging.Logger;
  */
 public class CarSequencing {
     
-    public static final long maxTimeToSolve = 140000000000L;
+    public static final long maxTimeToSolve = 20000000000L;    //Time resolution allowed for solvers
     private static PrintWriter fil;
 
     /**
@@ -30,10 +35,10 @@ public class CarSequencing {
     public static void main(String[] args) throws IllegalAccessException, IllegalStateException {
         
         //First we take Solvers we want to use
-        String[] solvers = {"GeneticAlgo"};//{"Algorithm", "Swapper", "BetterSwap", "GeneticAlgo"};
+        String[] solvers = {"Algorithm","Swapper","BetterSwap","GeneticAlgo"};
         
-        //Second we initialyze Instances Kind
-        String[] instancesKind = {"Instances_set_A", "Instances_set_X"};
+        //Second we initialyze Instances Kind (folders which contains problem instances)
+        String[] instancesKind = {"Instances_set_A","Instances_set_X"};
         
         //Set number of launch per solver and problem (to get means for non determinist solvers)
         int repeatSolve = 5;

@@ -5,6 +5,7 @@
  */
 package carsequencing;
 
+import data_object.DataProblem;
 import java.io.File;
 import java.util.ArrayList;
 import org.junit.After;

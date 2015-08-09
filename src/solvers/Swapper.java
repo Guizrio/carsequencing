@@ -3,8 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package carsequencing;
+package solvers;
 
+import data_object.Car;
+import carsequencing.CarSequencing;
+import data_object.DataProblem;
+import data_object.RatioConstraint;
+import carsequencing.Solution;
+import tools.Time;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -225,7 +231,7 @@ public class Swapper extends Algo{
      * @param i the index of the sequenced car in list where we want the objective violation.
      * @return Objective violation at position i
      */
-    protected long objViolAtPos(int i, ArrayList<Car> allCars){
+    public long objViolAtPos(int i, ArrayList<Car> allCars){
         long nbTotalViol[] = new long[2]; //Order : highprio, lowprio, paint batches
         int[] multObjective = dat.getClassObjective().getMultForCompute();
         
